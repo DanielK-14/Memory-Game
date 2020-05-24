@@ -37,8 +37,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AIPlayer.cs" />
     <Compile Include="BoardCell.cs" />
     <Compile Include="GameBoard.cs" />
+    <Compile Include="MemoryGame.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
