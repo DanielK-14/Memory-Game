@@ -41,10 +41,10 @@
     <Compile Include="BoardCell.cs" />
     <Compile Include="GameBoard.cs" />
     <Compile Include="GameLogics.cs" />
-    <Compile Include="LocationInBoard.cs" />
-    <Compile Include="MemoryGameUI.cs" />
+    <Compile Include="MattLocation.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="UI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
