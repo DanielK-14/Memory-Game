@@ -41,5 +41,9 @@ namespace B20_Ex02
                 m_Score = value;
             }
         }
+        public void AddScore()
+        {
+            m_Score++;
+        }
     }
 }
