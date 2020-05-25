@@ -7,10 +7,10 @@ namespace B20_Ex02
     class BoardCell<T>
     {
         private T m_Data;
-        private readonly int m_Location;
+        private readonly LocationInBoard m_Location;
         private bool m_Visible;
 
-        public BoardCell(T i_Data, int i_Location)
+        public BoardCell(T i_Data, LocationInBoard i_Location)
         {
             m_Data = i_Data;
             m_Location = i_Location;
@@ -36,7 +36,7 @@ namespace B20_Ex02
                 }
             }
         }
-        public int Location
+        public LocationInBoard Location
         {
             get
             {

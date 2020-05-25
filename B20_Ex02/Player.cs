@@ -14,6 +14,7 @@ namespace B20_Ex02
             m_Name = i_Name;
             m_Score = 0;
         }
+
         public string Name
         {
             get
@@ -28,9 +29,17 @@ namespace B20_Ex02
                 }
             }
         }
-        public void AddScore()
+
+        public int Score
         {
-            m_Score++;
+            get
+            {
+                return m_Score;
+            }
+            set
+            {
+                m_Score = value;
+            }
         }
     }
 }

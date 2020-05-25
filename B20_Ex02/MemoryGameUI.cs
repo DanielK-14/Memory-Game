@@ -4,9 +4,9 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    class MemoryGameUI
+    class MemoryGameUI<T>
     {
-
+        private GameLogics<T> m_GameLogics;
         
     }
 }
