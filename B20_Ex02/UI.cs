@@ -8,13 +8,16 @@ namespace B20_Ex02
 {
     class UI
     {
-        private GameLogics<T> m_Loic;
+        private GameLogics<T> m_Logic;
+        private int high;
+        private int width;
+        private LocationInBoard loc;
 
         public static string  GetPlayerName()
         {
             string name;
-            cout << "Please enter your name: \n";
-            cin >> name;
+            Console.WriteLine("Please enter your name: ");
+            name = Console.ReadLine();
             return name;
         }
 
@@ -22,13 +25,13 @@ namespace B20_Ex02
         {
             int player;
             string name;
-            cout << "Choose your opponent: (1) for another player (2) for AI \n";
-            cin >> player;
+            Console.WriteLine("Choose your opponent: (1) for another player (2) for AI ");
+            player = Convert.ToInt32(Console.ReadLine());
             switch(player)
             {
                 case 1:
-                    cout << "Please enter second player name: \n";
-                    cin >> name;
+                    Console.WriteLine("Please enter second player name: ");
+                    name = Console.ReadLine();
                     return name;
                     break;
                 case 2:
@@ -40,14 +43,18 @@ namespace B20_Ex02
 
         public static GetBoardSize()
         {
-            int high, width;
-            cout << "Please enter board size high and then width: \n";
+            Console.WriteLine("Please enter board high: ");
             do
             {
-                cin >> high;
-                cin >> width;
+                high = Convert.ToInt32(Console.ReadLine());
             }
-            while (GameLogic.BoardSizeChecks);
+            while (GameLogic.BoardRowChecks(high));
+            Console.WriteLine("Please enter board width: ");
+            do
+            {
+                width = Convert.ToInt32(Console.ReadLine());
+            }
+            while (GameLogic.BoardWidthChecks(width));
         }
 
         public static void PrintBoard()
@@ -90,7 +97,6 @@ namespace B20_Ex02
 
         public static LocationInBoard Turn()
         {
-            LocationInBoard loc;
             do
             {
                 cout << "enter row and then column to open: \n";
