@@ -8,15 +8,15 @@ namespace B20_Ex02
 {
     class UI
     {
-        private GameLogics<T> m_Logic;
+        private readonly GameLogics<T> m_Logic;
         private m_LocationInBoard loc;
-        private object* m_Player2;
-        private Player m_P1;
+        private string m_Player2;
+        private string m_Player1;
 
         
         public UI()
         {
-            m_P1 = new Player(GetPlayerName());
+            GetPlayerName();
             ChooseOpponent();
             GetBoardSize();
         }
@@ -32,7 +32,7 @@ namespace B20_Ex02
                     PrintBoard();
                     Turn();
                 }
-                if(Not a match)
+                if(IsPairFound == false)
                 {
                     Threading.Thread.sleep(2000);
                 }
@@ -51,12 +51,10 @@ namespace B20_Ex02
             }
         }
 
-        public static string  GetPlayerName()
+        public static void  GetPlayerName()
         {
-            string name;
             Console.WriteLine("Please enter your name: ");
-            name = Console.ReadLine();
-            return name;
+            m_Player1 = Console.ReadLine();
         }
 
         public void ChooseOpponent()
@@ -64,18 +62,15 @@ namespace B20_Ex02
             int choose;
             string name;
             Console.WriteLine("Choose your opponent: (1) for another player (2) for AI ");
-            choose = Convert.ToInt32(Console.ReadLine());
+            choose = IsNumeric(Console.ReadLine());
             switch(choose)
             {
                 case 1:
                     Console.WriteLine("Please enter second player name: ");
-                    name = Console.ReadLine();
-                    Player p2 = new Player(name);
-                    m_Player2 = p2;
+                    m_Player2 = Console.ReadLine();
                     break;
                 case 2:
-                    AIPlayer AIP = new AIPlayer();
-                    p2 = AIP;
+                    m_Player2 = "AIPlayer";
                     break;
             }
         }
@@ -92,7 +87,7 @@ namespace B20_Ex02
                 {
                     rows = Convert.ToInt32(Console.ReadLine());
                     columns = Convert.ToInt32(Console.ReadLine());
-                    result = GameLogic.BoardRowChecks(m_Rows, m_Columns);
+                    result = GameLogic.IsRowsAndColsValid(m_Rows, m_Columns);
                 }
                 catch(Exception exception)
                 {
@@ -106,7 +101,7 @@ namespace B20_Ex02
         public void PrintBoard()
         {
             StringBuilder sb2 = new StringBuilder("  =", 27);
-            StringBuilder sb = new StringBuilder("    A  ", 27);
+            StringBuilder sb = new StringBuilder("   ", 27);
             for(int i = 0; i < width; i++)// width of the game board
             {
                 sb.Append(" ");
@@ -130,7 +125,7 @@ namespace B20_Ex02
                     for(int j = 0; j < width; j++)// width of the game board
                     {
                         sb.Append(" ");
-                        sb.Append(GameLogics.CardDataShow);// need to checks with logics if its flip place or not
+                        sb.Append(GameLogics.CardDataShow((i+1)/2, j+1));// need to checks with logics if its flip place or not
                         sb.Append(" |");                   // if it does bring the data else bring (" ")
                     }
                     Console.WriteLine(sb);
@@ -152,8 +147,8 @@ namespace B20_Ex02
                     Console.WriteLine("enter row and then column to open a location: ");
                     row = Console.ReadLine();// checks valid
                     column = Console.ReadLine();
-                    m_Logic.IsCelValid
-                        (row, column);
+                    m_Logic.IsCelValid(row, column);
+                    m_Logic.ChooseCell(roww, column);
                 }
                 catch(Exception exception)
                 {
@@ -166,7 +161,25 @@ namespace B20_Ex02
             return loc;
         }
 
-
+        public int IsNumeric(string i_StringToCheck)
+        {
+            bool isNumeric;
+            do
+            {
+                if (i_StringToCheck >= '0' && i_StringToCheck <= '1')
+                {
+                    isNumeric = true;
+                }
+                else
+                {
+                    isNumeric = false;
+                    Console.WriteLine("Invalid input please try again: ");
+                    i_StringToCheck = Console.ReadLine();
+                }
+            }
+            while (isNumeric == false);
+            return Convert.ToInt32(i_StringToCheck);
+        }
 
     }
 }
