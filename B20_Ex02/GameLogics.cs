@@ -8,18 +8,14 @@ namespace B20_Ex02
     {
         private Player m_Player1;
         private Player m_Player2;
-        private GameBoard<T> m_GameBoard;
-        private List<T> m_CardsData;
+        private GameBoard m_GameBoard;
 
         public GameLogics(string i_Player1Name, string i_Player2Name, int i_Rows, int i_Cols)
         {
-            m_CardsData = i_CardsData;
-            m_GameBoard = new GameBoard<T>(i_Rows, i_Cols, i_CardsData);
+            m_GameBoard = new GameBoard(i_Rows, i_Cols);
             m_Player1 = new Player(i_Player1Name);
             m_Player2 = new Player(i_Player2Name);
         }
-
-        public List<T> CreateCardsData
 
         public static bool IsRowsAndColsValid(int i_Rows, int i_Cols)
         {
@@ -52,36 +48,49 @@ namespace B20_Ex02
             return result;
         }
 
-        public void ChooseCell(MattLocation i_Location)
+        public void ChooseCell(int row, int col)
         {
-            
-
-            OpenCell(i_Location);
+            OpenCell(row, col);
         }
 
-        public bool IsCellValid(string row, string col)
+        public bool IsCellValid(int i_Row, int i_Col)
         {
             bool result = true;
-
-            if(i_Location.Row > m_GameBoard.Rows || i_Location.Col > m_GameBoard.Cols || 
-                i_Location.Col < 0 || i_Location.Row < 0)
+            if(i_Row > m_GameBoard.Rows || i_Row < 0)
             {
-                result = false;
+                throw new Exception("Row value is incorrect.");
+            }
+            else if(i_Col > m_GameBoard.Cols || i_Col < 0)
+            {
+                throw new Exception("Columns value is incorrect.");
             }
 
             return result;
         }
 
-        public bool IsNumeric(string )
-
-        public void OpenCell(MattLocation i_Location)
+        public bool IsNumeric(string input)
         {
-            m_GameBoard.Board[i_Location.Row, i_Location.Col].Show();
+            bool result = true;
+            foreach(var character in input)
+            {
+                if(char.IsLetter(character) == false)
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
         }
 
-        public void CloseCell(MattLocation i_Location)
+        public void OpenCell(int row, int col)
         {
-            m_GameBoard.Board[i_Location.Row, i_Location.Col].Hide();
+            m_GameBoard.Board[row, col].Show();
+        }
+
+        public void CloseCell(int row, int col)
+        {
+            m_GameBoard.Board[row, col].Hide();
         }
     }
 }

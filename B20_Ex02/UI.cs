@@ -103,44 +103,6 @@ namespace B20_Ex02
             
         }
 
-        public void PrintBoard()
-        {
-            StringBuilder sb2 = new StringBuilder("  =", 27);
-            StringBuilder sb = new StringBuilder("    A  ", 27);
-            for(int i = 0; i < width; i++)// width of the game board
-            {
-                sb.Append(" ");
-                sb.Append((string)(65 + i));
-                sb.Append("  ");
-                sb2.Append("====");
-            }
-            Console.WriteLine(sb);
-
-            for (int i = 0; i <= high * 2; i++)// high of the game board
-            {
-                if(i % 2 == 0)
-                {
-                    Console.WriteLine(sb2);
-                }
-                else
-                {
-                    sb.Remove(0, 27);
-                    sb.Append((string)((i+1)/2));
-                    sb.Append(" |");
-                    for(int j = 0; j < width; j++)// width of the game board
-                    {
-                        sb.Append(" ");
-                        sb.Append(GameLogics.CardDataShow);// need to checks with logics if its flip place or not
-                        sb.Append(" |");                   // if it does bring the data else bring (" ")
-                    }
-                    Console.WriteLine(sb);
-                }
-            }
-
-
-
-        }
-
         public LocationInBoard Turn()
         {
             string row, column;
