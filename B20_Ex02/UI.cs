@@ -9,9 +9,10 @@ namespace B20_Ex02
     class UI
     {
         private readonly GameLogics<T> m_Logic;
-        private m_LocationInBoard loc;
-        private string m_Player2;
+        private m_LocationInBoard1 loc;
+        private m_LocationInBoard2 loc;
         private string m_Player1;
+        private string m_Player2;
 
         
         public UI()
@@ -31,10 +32,16 @@ namespace B20_Ex02
                 {
                     PrintBoard();
                     Turn();
+                    if(i == 0)
+                    {
+                        loc1.row = loc2.row;
+                        loc1.column = loc2.column;
+                    }
                 }
-                if(IsPairFound == false)
+                if(IsPairFound(loc1, loc2) == false)
                 {
                     Threading.Thread.sleep(2000);
+                    // and then need function to close the last two flips
                 }
                 else
                 {
@@ -75,7 +82,7 @@ namespace B20_Ex02
             }
         }
 
-        public GetBoardSize()
+        public void GetBoardSize()
         {
             bool result;
             string text;
@@ -95,7 +102,7 @@ namespace B20_Ex02
                 }
             }
             while (result == false);
-            
+            m_Logic = new GameLogics<T>(m_Player1, m_Player2, rows, columns);
         }
 
         public void PrintBoard()
@@ -156,8 +163,8 @@ namespace B20_Ex02
                 }
             }
             while (result == false);
-            loc.row = row;
-            loc.column = column;
+            loc2.row = row;
+            loc2.column = column;
             return loc;
         }
 

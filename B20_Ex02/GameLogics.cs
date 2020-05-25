@@ -65,6 +65,7 @@ namespace B20_Ex02
 
             if(i_Location.Row > m_GameBoard.Rows || i_Location.Col > m_GameBoard.Cols || 
                 i_Location.Col < 0 || i_Location.Row < 0)
+            //change with if(i_Row > m_GameBoard.Rows || i_Col >  m_GameBoard.Cols || i_Row < 0 || i_Col < 0)
             {
                 result = false;
             }
@@ -72,7 +73,7 @@ namespace B20_Ex02
             return result;
         }
 
-        public bool IsNumeric(string )
+        public bool IsNumeric(string )//made one that returns the actuall numeric in Class UI.cs
 
         public void OpenCell(MattLocation i_Location)
         {
