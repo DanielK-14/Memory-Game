@@ -6,8 +6,7 @@ namespace B20_Ex02
 {
     class MemoryGameUI
     {
-        private Player m_Player1;
-        private Player m_Player2;
+
         
     }
 }
