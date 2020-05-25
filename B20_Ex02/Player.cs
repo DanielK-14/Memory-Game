@@ -4,7 +4,7 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    struct Player
+    class Player
     {
         private string m_Name;
         private int m_Score;

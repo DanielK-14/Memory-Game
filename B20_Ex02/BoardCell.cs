@@ -4,25 +4,16 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    class BoardCell
+    class BoardCell<T>
     {
-        private object m_Data;
-        private readonly int m_Key;
+        private T m_Data;
         private readonly int m_Location;
         private bool m_Visible;
 
-        public BoardCell(object i_Data, int i_Key, int i_Location)
+        public BoardCell(T i_Data, int i_Location)
         {
             m_Data = i_Data;
-            m_Key = i_Key;
             m_Location = i_Location;
-        }
-        public int Key
-        {
-            get
-            {
-                return m_Key;
-            }
         }
         public bool Visible
         {
@@ -31,7 +22,7 @@ namespace B20_Ex02
                 return m_Visible;
             }
         }
-        public object Data
+        public T Data
         {
             get
             {

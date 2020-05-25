@@ -4,10 +4,10 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    class MemoryGame
+    class MemoryGameUI
     {
         private Player m_Player1;
-        private Nullable<Player> m_Player2;
-        private Nullable<>
+        private Player m_Player2;
+        
     }
 }
