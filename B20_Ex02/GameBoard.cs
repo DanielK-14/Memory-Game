@@ -110,7 +110,7 @@ namespace B20_Ex02
             }
         }
 
-        public void PrintBoard()
+        public void Print()
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(FirstLineCols('A').ToString());

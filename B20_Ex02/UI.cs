@@ -1,192 +1,146 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Media;
 using System.Text;
 
 namespace B20_Ex02
 {
     class UI
     {
-        private readonly GameLogics<T> m_Logic;
-        private m_LocationInBoard1 loc;
-        private m_LocationInBoard2 loc;
-        private string m_Player1;
-        private string m_Player2;
+        private GameLogics m_Logic;
 
-        
-        public UI()
+        public void StartScreen()
         {
-            GetPlayerName();
-            ChooseOpponent();
-            GetBoardSize();
+            string firstPlayerName = GetPlayerName();
+            string secondPlayerName;
+            int rows;
+            int columns;
+
+            ChooseAndSetOpponent();
+            if (GameLogics.IsPlayerHuman() == true) ;
+            {
+                secondPlayerName = ChooseOpponentName();
+            }
+
+            PlayGame();
         }
 
         public void PlayGame()
         {
-            int turnNumber = 1;
-
-            while (m_Logic.IsGameOver() == false)
+            bool toContinue = true;
+            while (toContinue == true)
             {
-                for(int i = 0; i < 2; i++)
+                int rows;
+                int columns;
+                GetBoardSize(out rows, out columns);
+
+                MattLocation pick1;
+                MattLocation pick2;
+
+                while (m_Logic.IsGameOver() == false)
                 {
-                    PrintBoard();
-                    Turn();
-                    if(i == 0)
-                    {
-                        loc1.row = loc2.row;
-                        loc1.column = loc2.column;
-                    }
+                    pick1 = PickCard();
+                    pick2 = PickCard();
+                    m_Logic.PlayTurn(pick1, pick2);
                 }
-                if(IsPairFound(loc1, loc2) == false)
-                {
-                    Threading.Thread.sleep(2000);
-                    // and then need function to close the last two flips
-                }
-                else
-                {
-                    if(turnNumber % 2 == 1)
-                    {
-                        m_P1.AddScore();
-                    }
-                    else
-                    {
-                        m_Player2->AddScore();
-                    }
-                }
-                turnNumber++;
+
+                m_Logic.PrintEndGameScreen();
+                Console.WriteLine("Would you like to play again?");
+                string input = Console.ReadLine();
+                toContinue = m_Logic.CheckIfContinue(input);
             }
+
+            GameLogics.ExitGame();
         }
 
-        public static void  GetPlayerName()
+        public string GetPlayerName()
         {
-            Console.WriteLine("Please enter your name: ");
-            m_Player1 = Console.ReadLine();
+            Console.WriteLine("Please enter first player name: ");
+            string name = Console.ReadLine();
+            return name;
         }
 
-        public void ChooseOpponent()
+        public void ChooseAndSetOpponent()
         {
-            int choose;
+            GameLogics.ePlayer opponent;
+            string choiseString;
+            Console.WriteLine("Choose your opponent: (1) for second player (2) for AI player");
+            choiseString = Console.ReadLine();
+            bool result = GameLogics.IsChoiseValid(choiseString);
+            GameLogics.SetOpponentType(int.Parse(choiseString));
+        }
+
+        public string ChooseOpponentName()
+        {
             string name;
-            Console.WriteLine("Choose your opponent: (1) for another player (2) for AI ");
-            choose = IsNumeric(Console.ReadLine());
-            switch(choose)
-            {
-                case 1:
-                    Console.WriteLine("Please enter second player name: ");
-                    m_Player2 = Console.ReadLine();
-                    break;
-                case 2:
-                    m_Player2 = "AIPlayer";
-                    break;
-            }
+
+            Console.WriteLine("Please enter second player name: ");
+            name = Console.ReadLine();
+
+            return name;
         }
 
-        public void GetBoardSize()
+        public void GetBoardSize(out int io_Rows, out int io_Columns)
         {
-            bool result;
-            string text;
-            int rows, columns;
-            Console.WriteLine("Please enter board rows and then columns: ");
+            bool result = true;
+            string rows = string.Empty;
+            string columns = string.Empty;
+
             do
             {
                 try
                 {
-                    rows = Convert.ToInt32(Console.ReadLine());
-                    columns = Convert.ToInt32(Console.ReadLine());
-                    result = GameLogic.IsRowsAndColsValid(m_Rows, m_Columns);
+                    Console.WriteLine("Please enter board rows size and then columns size:");
+                    rows = Console.ReadLine();
+                    result = GameLogics.IsNumeric(rows);
+
+                    columns = Console.ReadLine();
+                    result = GameLogics.IsNumeric(columns);
+
+                    result = GameLogics.IsRowsAndColsValid(int.Parse(rows), int.Parse(columns));
                 }
                 catch(Exception exception)
                 {
+                    result = false;
                     Console.WriteLine(exception.Message);
                 }
             }
             while (result == false);
-            m_Logic = new GameLogics<T>(m_Player1, m_Player2, rows, columns);
+
+            io_Rows = int.Parse(rows);
+            io_Columns = int.Parse(columns);
         }
 
-        public void PrintBoard()
+        public MattLocation PickCard()
         {
-            StringBuilder sb2 = new StringBuilder("  =", 27);
-            StringBuilder sb = new StringBuilder("   ", 27);
-            for(int i = 0; i < width; i++)// width of the game board
-            {
-                sb.Append(" ");
-                sb.Append((string)(65 + i));
-                sb.Append("  ");
-                sb2.Append("====");
-            }
-            Console.WriteLine(sb);
-
-            for (int i = 0; i <= high * 2; i++)// high of the game board
-            {
-                if(i % 2 == 0)
-                {
-                    Console.WriteLine(sb2);
-                }
-                else
-                {
-                    sb.Remove(0, 27);
-                    sb.Append((string)((i+1)/2));
-                    sb.Append(" |");
-                    for(int j = 0; j < width; j++)// width of the game board
-                    {
-                        sb.Append(" ");
-                        sb.Append(GameLogics.CardDataShow((i+1)/2, j+1));// need to checks with logics if its flip place or not
-                        sb.Append(" |");                   // if it does bring the data else bring (" ")
-                    }
-                    Console.WriteLine(sb);
-                }
-            }
-
-
-
-        }
-
-        public LocationInBoard Turn()
-        {
-            string row, column;
-            bool result;
+            string rowString, columnString;
+            MattLocation location = null;
+            bool result = true;
             do
             {
                 try
                 {
-                    Console.WriteLine("enter row and then column to open a location: ");
-                    row = Console.ReadLine();// checks valid
-                    column = Console.ReadLine();
-                    m_Logic.IsCelValid(row, column);
-                    m_Logic.ChooseCell(roww, column);
+                    m_Logic.PrintBoard();
+                    Console.WriteLine("Please enter row and then column to open a card:");
+                    rowString = Console.ReadLine();
+                    GameLogics.IsNumeric(rowString);     //Checks if rowString is numeric. if not throws an excepetion.
+
+                    columnString = Console.ReadLine();
+                    GameLogics.IsNumeric(columnString);  //Checks if columnString is numeric. if not throws an excepetion.
+
+                    location = new MattLocation(int.Parse(rowString), int.Parse(columnString));
+
+                    m_Logic.IsCellValid(location);
+                    m_Logic.OpenCard(location);
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
+                    Ex02.ConsoleUtils.Screen.Clear();
+                    result = false;
                     Console.WriteLine(exception.Message);
                 }
             }
-            while (result == false);
-            loc2.row = row;
-            loc2.column = column;
-            return loc;
-        }
+            while (result = false);
 
-        public int IsNumeric(string i_StringToCheck)
-        {
-            bool isNumeric;
-            do
-            {
-                if (i_StringToCheck >= '0' && i_StringToCheck <= '1')
-                {
-                    isNumeric = true;
-                }
-                else
-                {
-                    isNumeric = false;
-                    Console.WriteLine("Invalid input please try again: ");
-                    i_StringToCheck = Console.ReadLine();
-                }
-            }
-            while (isNumeric == false);
-            return Convert.ToInt32(i_StringToCheck);
+            return location;
         }
-
     }
 }

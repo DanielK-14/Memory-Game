@@ -4,7 +4,7 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    struct MattLocation
+    class MattLocation
     {
         private int m_Row;
         private int m_Col;
