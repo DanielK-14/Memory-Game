@@ -115,10 +115,10 @@ namespace B20_Ex02
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(FirstLineCols('A').ToString());
             stringBuilder.AppendLine(LineSeperate('=').ToString());
-            for (int row = 0; row < Rows; row++)
+            for (int row = 0; row < m_Rows; row++)
             {
                 stringBuilder.Append((row+1).ToString() + " |");
-                for (int col = 0; col < Cols; col++)
+                for (int col = 0; col < m_Cols; col++)
                 {
                     if(m_Board[row,col].Visible == true)
                     {
@@ -143,7 +143,7 @@ namespace B20_Ex02
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("  ");
-            for (int i = 0; i < Cols; i++)
+            for (int i = 0; i < m_Cols; i++)
             {
                 stringBuilder.Append(i_SeprateCharacter);
                 stringBuilder.Append(i_SeprateCharacter, 3);
@@ -157,7 +157,7 @@ namespace B20_Ex02
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("   ");
-            for (int i = 0; i < Cols; i++)
+            for (int i = 0; i < m_Cols; i++)
             {
                 stringBuilder.Append(" " + i_ColoumsChar + " ");
                 stringBuilder.Append(" ");

@@ -13,11 +13,16 @@ namespace B20_Ex02
             string secondPlayerName;
             int rows;
             int columns;
+            GetBoardSize(out rows, out columns);
 
             ChooseAndSetOpponent();
-            if (GameLogics.IsPlayerHuman() == true) ;
+            if(GameLogics.IsPlayerHuman() == true) ;
             {
                 secondPlayerName = ChooseOpponentName();
+            }
+            if(GameLogics.IsPlayerHuman() == false)
+            {
+                GameLogics.BuildAIMemory(rows, columns);
             }
 
             PlayGame();
@@ -28,17 +33,24 @@ namespace B20_Ex02
             bool toContinue = true;
             while (toContinue == true)
             {
-                int rows;
-                int columns;
-                GetBoardSize(out rows, out columns);
+                //int rows;
+                //int columns;
+                //GetBoardSize(out rows, out columns);// we build the game board before /the AI need to know the size of his memory
 
                 MattLocation pick1;
                 MattLocation pick2;
 
                 while (m_Logic.IsGameOver() == false)
                 {
-                    pick1 = PickCard();
-                    pick2 = PickCard();
+                    if(GameLogics.IsPlayerHuman() == true)
+                    {
+                        pick1 = PickCard();
+                        pick2 = PickCard();
+                    }
+                    else
+                    {
+                        GameLogics.AIPlayerMove(out pick1, out pick2);
+                    }
                     m_Logic.PlayTurn(pick1, pick2);
                 }
 
@@ -130,6 +142,7 @@ namespace B20_Ex02
 
                     m_Logic.IsCellValid(location);
                     m_Logic.OpenCard(location);
+                    m_Logic.PrintBoard();
                 }
                 catch (Exception exception)
                 {

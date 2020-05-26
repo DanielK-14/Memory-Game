@@ -43,7 +43,7 @@ namespace B20_Ex02
             get
             {
                 ePlayer playerType;
-                if(m_TurnNumber % 2 == 1)
+                if (m_TurnNumber % 2 == 1)
                 {
                     playerType = ePlayer.Player1;
                 }
@@ -95,7 +95,7 @@ namespace B20_Ex02
             {
                 throw new Exception("Values are not in range. MIN 4X4 MAX 6X6");
             }
-            else if((i_Rows * i_Cols) % 2 == 1)
+            else if ((i_Rows * i_Cols) % 2 == 1)
             {
                 throw new Exception("Values multiplication is odd. Supposed to be even.");
             }
@@ -122,11 +122,11 @@ namespace B20_Ex02
         public bool IsCellValid(MattLocation i_Location)
         {
             bool result = true;
-            if(i_Location.Row > m_GameBoard.Rows || i_Location.Row < 0)
+            if (i_Location.Row > m_GameBoard.Rows || i_Location.Row < 0)
             {
                 throw new Exception("Row value is incorrect.");
             }
-            else if(i_Location.Col > m_GameBoard.Cols || i_Location.Col < 0)
+            else if (i_Location.Col > m_GameBoard.Cols || i_Location.Col < 0)
             {
                 throw new Exception("Column value is incorrect.");
             }
@@ -142,9 +142,9 @@ namespace B20_Ex02
         public static bool IsNumeric(string input)
         {
             bool result = true;
-            foreach(var character in input)
+            foreach (var character in input)
             {
-                if(char.IsLetter(character) == false)
+                if (char.IsLetter(character) == false)
                 {
                     result = false;
                     break;
@@ -157,7 +157,7 @@ namespace B20_Ex02
         public bool CheckIfContinue(string input)
         {
             bool result = true;
-            switch(input.ToLower())
+            switch (input.ToLower())
             {
                 case "yes":
                     result = true;
@@ -167,7 +167,7 @@ namespace B20_Ex02
                     result = false;
                     break;
 
-                //default:
+                    //default:
 
             }
 
@@ -213,13 +213,43 @@ namespace B20_Ex02
                 if (m_TurnNumber % 2 == 1)
                 {
                     AddScore(ePlayer.Player1);
+                    AddAIMemory(i_Pick1, i_Pick2);
                 }
                 else
                 {
                     AddScore(m_Opponent);
                 }
             }
+       
         }
+
+        public void AIPlayerMove(out MattLocation i_Pick1, out MattLocation i_Pick2)//////////////////////////////////////////////////////////////
+        {
+            int EmptyPlace = m_PlayerAI.NextEmptyPlace();
+            int row = EmptyPlace / m_GameBoard.Rows;
+            int col = EmptyPlace % m_GameBoard.Cols;
+            int index;
+
+            i_Pick1 = new MattLocation(row, col);
+
+            index = m_PlayerAI.GetPair(m_GameBoard.Board[row, col]);
+            row = EmptyPlace / m_GameBoard.Rows;
+            col = EmptyPlace % m_GameBoard.Cols;
+            i_Pick2 = new MattLocation(row, col);
+
+        }
+           
+        public void AddAIMemory(MattLocation i_Pick)
+        {
+
+        }
+
+        public void BuildAIMemory(int i_Rows, int i_columns)
+        {
+            m_PlayerAI.SetMemory(i_Rows, i_columns);
+        }
+            
+
 
         public void AddScore(ePlayer i_Player)
         {
