@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.AccessControl;
 using System.Text;
 
 namespace B20_Ex02
@@ -21,27 +20,22 @@ namespace B20_Ex02
             PlayerAI
         }
 
-        public GameLogics(string i_Player1Name, string i_Player2Name)
+        public GameLogics(string i_Player1Name, string i_Player2Name, int i_Rows, int i_Cols)
         {
+            m_GameBoard = new GameBoard(i_Rows, i_Cols);
             m_Player1 = new Player(i_Player1Name);
-            if (i_Player2Name != string.Empty)
-            {
-                m_Player2 = new Player(i_Player2Name);
-                m_PlayerAI = null;
-                m_Opponent = ePlayer.Player2;
-            }
-            else
-            {
-                m_PlayerAI = new AIPlayer();
-                m_Player2 = null;
-                m_Opponent = ePlayer.PlayerAI;
-            }
+            m_Player2 = new Player(i_Player2Name);
+            m_Opponent = ePlayer.Player2;
             m_TurnNumber = 1;
         }
 
-        public void SetNewBoard(int i_Rows, int i_Cols)
+        public GameLogics(string i_Player1Name, int i_Rows, int i_Cols)
         {
             m_GameBoard = new GameBoard(i_Rows, i_Cols);
+            m_Player1 = new Player(i_Player1Name);
+            m_Opponent = ePlayer.PlayerAI;
+            m_PlayerAI = new AIPlayer();
+            m_TurnNumber = 1;
         }
 
         public ePlayer GetPlayerTurn
@@ -49,7 +43,7 @@ namespace B20_Ex02
             get
             {
                 ePlayer playerType;
-                if(m_TurnNumber % 2 == 1)
+                if (m_TurnNumber % 2 == 1)
                 {
                     playerType = ePlayer.Player1;
                 }
@@ -94,14 +88,16 @@ namespace B20_Ex02
             }
         }
 
-        public static bool IsBoardSizesValid(int i_Rows, int i_Cols, out string io_ErrorMsg)
+        public static bool IsRowsAndColsValid(int i_Rows, int i_Cols)
         {
             bool result = true;
-            io_ErrorMsg = string.Empty;
-            if (i_Rows < 4 || i_Rows > 6 || i_Cols < 4 || i_Cols > 6)
+            if (i_Rows * i_Cols < 16 || i_Rows * i_Cols > 36)
             {
-                io_ErrorMsg = "Values not in range";
-                result = false;
+                throw new Exception("Values are not in range. MIN 4X4 MAX 6X6");
+            }
+            else if ((i_Rows * i_Cols) % 2 == 1)
+            {
+                throw new Exception("Values multiplication is odd. Supposed to be even.");
             }
 
             return result;
@@ -123,19 +119,16 @@ namespace B20_Ex02
             return result;
         }
 
-        public bool IsCellValid(int i_Rows, int i_Cols, out string io_ErrorMsg)
+        public bool IsCellValid(MattLocation i_Location)
         {
             bool result = true;
-            io_ErrorMsg = string.Empty;
-            if (i_Rows > m_GameBoard.Rows || i_Rows < 0)
+            if (i_Location.Row > m_GameBoard.Rows || i_Location.Row < 0)
             {
-                result = false;
-                io_ErrorMsg = "Row incorrect";
+                throw new Exception("Row value is incorrect.");
             }
-            else if(i_Cols > m_GameBoard.Cols || i_Cols < 0)
+            else if (i_Location.Col > m_GameBoard.Cols || i_Location.Col < 0)
             {
-                result = false;
-                io_ErrorMsg = "Column incorrect";
+                throw new Exception("Column value is incorrect.");
             }
 
             return result;
@@ -146,16 +139,14 @@ namespace B20_Ex02
             return (m_Opponent == ePlayer.Player2);
         }
 
-        public static bool IsNumeric(string input, out string io_ErrorMsg)
+        public static bool IsNumeric(string input)
         {
-            io_ErrorMsg = string.Empty;
             bool result = true;
-            foreach(var character in input)
+            foreach (var character in input)
             {
-                if(char.IsDigit(character) == false)
+                if (char.IsLetter(character) == false)
                 {
                     result = false;
-                    io_ErrorMsg = "Not numeric input";
                     break;
                 }
             }
@@ -163,51 +154,10 @@ namespace B20_Ex02
             return result;
         }
 
-        public bool IsValidColumn(string input, out string io_ErrorMsg)
+        public bool CheckIfContinue(string input)
         {
-            io_ErrorMsg = string.Empty;
             bool result = true;
-            input = input.ToUpper();
-
-            if (input.Length > 1 || input == string.Empty || int.Parse(io_ErrorMsg) - 65 > m_GameBoard.Cols || int.Parse(io_ErrorMsg) - 65 < 0)
-            {
-                result = false;
-                io_ErrorMsg = "Column does not exsit";
-            }
-            
-            return result;
-        }
-
-        public bool IsValidRow(string input, out string io_ErrorMsg)
-        {
-            io_ErrorMsg = string.Empty;
-            bool result = true;
-            
-            if(IsNumeric(input, out io_ErrorMsg) == false)
-            {
-                result = false;
-                io_ErrorMsg = "Input not numeric";
-            }
-            else if(input == string.Empty || int.Parse(io_ErrorMsg) > m_GameBoard.Rows || int.Parse(io_ErrorMsg) - 1 < 0)
-            {
-                result = false;
-                io_ErrorMsg = "Wrong input for row";
-            }
-
-            return result;
-        }
-
-        public int ConvertCharToIntLocation(string i_Character)
-        {
-            i_Character = i_Character.ToUpper();
-            return (int.Parse(i_Character) - 65);
-        }
-
-        public bool CheckIfContinue(string input, out string io_ErrorMsg)
-        {
-            io_ErrorMsg = string.Empty;
-            bool result = true;
-            switch(input.ToLower())
+            switch (input.ToLower())
             {
                 case "yes":
                     result = true;
@@ -217,26 +167,21 @@ namespace B20_Ex02
                     result = false;
                     break;
 
-                default:
-                    io_ErrorMsg = "Wrong input";
-                    result = false;
-                    break;
+                    //default:
+
             }
 
             return result;
         }
 
-        public static bool IsChoiseValid(string choise, out string io_ErrorMsg)
+        public static bool IsChoiseValid(string choise)
         {
-            bool result = true;
-            io_ErrorMsg = string.Empty;
             if (choise != "0" && choise != "1")
             {
-                io_ErrorMsg = "Invalid choise";
-                result = false;
+                throw new Exception("Invalid choise.");
             }
 
-            return result;
+            return true;
         }
 
         public static void SetOpponentType(int type)
@@ -247,13 +192,10 @@ namespace B20_Ex02
         public void OpenCard(MattLocation i_Location)
         {
             m_GameBoard.Board[i_Location.Row, i_Location.Col].Show();
-            Ex02.ConsoleUtils.Screen.Clear();
-            m_GameBoard.Print();
         }
 
         public void CloseCards(MattLocation i_Location1, MattLocation i_Location2)
         {
-
             m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Hide();
             m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Hide();
         }
@@ -271,28 +213,62 @@ namespace B20_Ex02
                 if (m_TurnNumber % 2 == 1)
                 {
                     AddScore(ePlayer.Player1);
+                    AddAIMemory(i_Pick1, i_Pick2);
                 }
                 else
                 {
                     AddScore(m_Opponent);
                 }
             }
+       
         }
 
-        public void AddScore(ePlayer i_PlayerType)
+        public void AIPlayerMove(out MattLocation i_Pick1, out MattLocation i_Pick2)//////////////////////////////////////////////////////////////
         {
-            switch (i_PlayerType)
+            int EmptyPlace = m_PlayerAI.NextEmptyPlace();
+            int row = EmptyPlace / m_GameBoard.Rows;
+            int col = EmptyPlace % m_GameBoard.Cols;
+            int index;
+
+            i_Pick1 = new MattLocation(row, col);
+
+            index = m_PlayerAI.GetPair(m_GameBoard.Board[row, col]);
+            row = EmptyPlace / m_GameBoard.Rows;
+            col = EmptyPlace % m_GameBoard.Cols;
+            i_Pick2 = new MattLocation(row, col);
+
+        }
+           
+        public void AddAIMemory(MattLocation i_Pick)
+        {
+
+        }
+
+        public void BuildAIMemory(int i_Rows, int i_columns)
+        {
+            m_PlayerAI.SetMemory(i_Rows, i_columns);
+        }
+            
+
+
+        public void AddScore(ePlayer i_Player)
+        {
+            switch (i_Player)
             {
                 case ePlayer.Player1:
                     m_Player1.AddScore();
                     break;
 
                 case ePlayer.Player2:
-                        m_Player2.AddScore();
+                    if (m_Player2 == null)
+                        throw new Exception("Player2 was not signed.");
+                    m_Player2.AddScore();
                     break;
 
                 case ePlayer.PlayerAI:
-                        m_PlayerAI.AddScore();
+                    if (m_Player2 == null)
+                        throw new Exception("PlayerAI was not signed.");
+                    m_PlayerAI.AddScore();
                     break;
             }
         }
@@ -335,9 +311,9 @@ The results are:";
 
         private string buildWinnerFormat()
         {
-            string winnerFormat;
+            string winnerFormat = String.Empty;
             string opponentName = String.Empty;
-            int opponentScore = 0;
+            int opponentScore;
 
             switch(m_Opponent)
             {
@@ -350,6 +326,9 @@ The results are:";
                     opponentName = m_PlayerAI.Name;
                     opponentScore = m_PlayerAI.Score;
                     break;
+
+                default:
+                    throw new Exception("Wrong winner inputted");
             }
 
             if (m_Player1.Score > opponentScore)
@@ -368,16 +347,7 @@ The results are:";
             return winnerFormat;
         }
 
-        public void CheckIfToExitGame(string input)
-        {
-            input = input.ToLower();
-            if(input == "q")
-            {
-                ExitGame();
-            }
-        }
-
-        public void ExitGame()
+        public static void ExitGame()
         {
             Environment.Exit(1);
         }

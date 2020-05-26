@@ -10,53 +10,57 @@ namespace B20_Ex02
         public void StartScreen()
         {
             string firstPlayerName = GetPlayerName();
-            string secondPlayerName = string.Empty;
+            string secondPlayerName;
+            int rows;
+            int columns;
+            GetBoardSize(out rows, out columns);
 
             ChooseAndSetOpponent();
-            if (GameLogics.IsPlayerHuman() == true) ;
+            if(GameLogics.IsPlayerHuman() == true) ;
             {
                 secondPlayerName = ChooseOpponentName();
             }
+            if(GameLogics.IsPlayerHuman() == false)
+            {
+                GameLogics.BuildAIMemory(rows, columns);
+            }
 
-            m_Logic = new GameLogics(firstPlayerName, secondPlayerName);
             PlayGame();
         }
 
         public void PlayGame()
         {
-            string errorMsg;
-            bool toContinue;
-            int rows, columns;
-            do
+            bool toContinue = true;
+            while (toContinue == true)
             {
-                GetBoardSize(out rows, out columns);
-                m_Logic.SetNewBoard(rows, columns);
+                //int rows;
+                //int columns;
+                //GetBoardSize(out rows, out columns);// we build the game board before /the AI need to know the size of his memory
+
                 MattLocation pick1;
                 MattLocation pick2;
 
                 while (m_Logic.IsGameOver() == false)
                 {
-                    pick1 = PickCard();
-                    pick2 = PickCard();
+                    if(GameLogics.IsPlayerHuman() == true)
+                    {
+                        pick1 = PickCard();
+                        pick2 = PickCard();
+                    }
+                    else
+                    {
+                        GameLogics.AIPlayerMove(out pick1, out pick2);
+                    }
                     m_Logic.PlayTurn(pick1, pick2);
                 }
 
                 m_Logic.PrintEndGameScreen();
-                do
-                {
-                    Console.WriteLine("Would you like to play again?");
-                    string input = Console.ReadLine();
-                    toContinue = m_Logic.CheckIfContinue(input, out errorMsg);
-                    if (errorMsg != string.Empty)
-                    {
-                        Console.WriteLine(errorMsg);
-                    }
-                }
-                while (errorMsg != string.Empty);
+                Console.WriteLine("Would you like to play again?");
+                string input = Console.ReadLine();
+                toContinue = m_Logic.CheckIfContinue(input);
             }
-            while (toContinue == true);
 
-            m_Logic.ExitGame();
+            GameLogics.ExitGame();
         }
 
         public string GetPlayerName()
@@ -68,21 +72,11 @@ namespace B20_Ex02
 
         public void ChooseAndSetOpponent()
         {
-            string errorMsg;
-            bool result;
+            GameLogics.ePlayer opponent;
             string choiseString;
-            do
-            {
-                Console.WriteLine("Choose your opponent: (1) for second player (2) for AI player");
-                choiseString = Console.ReadLine();
-                result = GameLogics.IsChoiseValid(choiseString, out errorMsg);
-                if(result == false)
-                {
-                    Console.WriteLine(errorMsg);
-                }
-            }
-            while (result == false);
-
+            Console.WriteLine("Choose your opponent: (1) for second player (2) for AI player");
+            choiseString = Console.ReadLine();
+            bool result = GameLogics.IsChoiseValid(choiseString);
             GameLogics.SetOpponentType(int.Parse(choiseString));
         }
 
@@ -90,7 +84,7 @@ namespace B20_Ex02
         {
             string name;
 
-            Console.WriteLine("Please enter second player name:");
+            Console.WriteLine("Please enter second player name: ");
             name = Console.ReadLine();
 
             return name;
@@ -98,30 +92,27 @@ namespace B20_Ex02
 
         public void GetBoardSize(out int io_Rows, out int io_Columns)
         {
-            string errorMsg;
-            bool result;
-            string rows;
+            bool result = true;
+            string rows = string.Empty;
             string columns = string.Empty;
 
             do
             {
-                Console.WriteLine("Please enter board rows size and then columns size:");
-                rows = Console.ReadLine();
-                result = GameLogics.IsNumeric(rows, out errorMsg);
-
-                if (result == true)
+                try
                 {
+                    Console.WriteLine("Please enter board rows size and then columns size:");
+                    rows = Console.ReadLine();
+                    result = GameLogics.IsNumeric(rows);
+
                     columns = Console.ReadLine();
-                    result = GameLogics.IsNumeric(columns ,out errorMsg);
-                    if (result == true)
-                    {
-                        result = GameLogics.IsBoardSizesValid(int.Parse(rows), int.Parse(columns), out errorMsg);
-                    }
-                }
+                    result = GameLogics.IsNumeric(columns);
 
-                if(result == false)
+                    result = GameLogics.IsRowsAndColsValid(int.Parse(rows), int.Parse(columns));
+                }
+                catch(Exception exception)
                 {
-                    Console.WriteLine(errorMsg);
+                    result = false;
+                    Console.WriteLine(exception.Message);
                 }
             }
             while (result == false);
@@ -132,37 +123,35 @@ namespace B20_Ex02
 
         public MattLocation PickCard()
         {
-            string errorMsg;
             string rowString, columnString;
             MattLocation location = null;
             bool result = true;
             do
             {
-                m_Logic.PrintBoard();
-                Console.WriteLine("Please enter column character and the row number to open a card:");
-                columnString = Console.ReadLine();
-                m_Logic.CheckIfToExitGame(columnString);
-                if (m_Logic.IsValidColumn(columnString, out errorMsg) != false) 
+                try
                 {
+                    m_Logic.PrintBoard();
+                    Console.WriteLine("Please enter row and then column to open a card:");
                     rowString = Console.ReadLine();
-                    m_Logic.CheckIfToExitGame(columnString);
-                    if (m_Logic.IsValidRow(rowString, out errorMsg) != false)  
-                    { 
-                        if (m_Logic.IsCellValid(int.Parse(rowString), int.Parse(columnString), out errorMsg) != false)
-                        {
-                            location = new MattLocation(int.Parse(rowString) - 1, int.Parse(columnString));
-                            m_Logic.OpenCard(location);
-                        }
-                    }
-                }
+                    GameLogics.IsNumeric(rowString);     //Checks if rowString is numeric. if not throws an excepetion.
 
-                if(errorMsg != string.Empty)
+                    columnString = Console.ReadLine();
+                    GameLogics.IsNumeric(columnString);  //Checks if columnString is numeric. if not throws an excepetion.
+
+                    location = new MattLocation(int.Parse(rowString), int.Parse(columnString));
+
+                    m_Logic.IsCellValid(location);
+                    m_Logic.OpenCard(location);
+                    m_Logic.PrintBoard();
+                }
+                catch (Exception exception)
                 {
+                    Ex02.ConsoleUtils.Screen.Clear();
                     result = false;
-                    Console.WriteLine(errorMsg);
+                    Console.WriteLine(exception.Message);
                 }
             }
-            while (result == false);
+            while (result = false);
 
             return location;
         }
