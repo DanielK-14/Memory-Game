@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 
 namespace B20_Ex02
 {
@@ -11,6 +10,7 @@ namespace B20_Ex02
         {
             string firstPlayerName = GetPlayerName();
             string secondPlayerName = string.Empty;
+            int rows, columns;
 
             ChooseAndSetOpponent();
             if (GameLogics.IsPlayerHuman() == true) ;
@@ -76,7 +76,7 @@ namespace B20_Ex02
                 Console.WriteLine("Choose your opponent: (1) for second player (2) for AI player");
                 choiseString = Console.ReadLine();
                 result = GameLogics.IsChoiseValid(choiseString, out errorMsg);
-                if(result == false)
+                if (result == false)
                 {
                     Console.WriteLine(errorMsg);
                 }
@@ -112,14 +112,14 @@ namespace B20_Ex02
                 if (result == true)
                 {
                     columns = Console.ReadLine();
-                    result = GameLogics.IsNumeric(columns ,out errorMsg);
+                    result = GameLogics.IsNumeric(columns, out errorMsg);
                     if (result == true)
                     {
                         result = GameLogics.IsBoardSizesValid(int.Parse(rows), int.Parse(columns), out errorMsg);
                     }
                 }
 
-                if(result == false)
+                if (result == false)
                 {
                     Console.WriteLine(errorMsg);
                 }
@@ -142,12 +142,12 @@ namespace B20_Ex02
                 Console.WriteLine("Please enter column character and the row number to open a card:");
                 columnString = Console.ReadLine();
                 m_Logic.CheckIfToExitGame(columnString);
-                if (m_Logic.IsValidColumn(columnString, out errorMsg) != false) 
+                if (m_Logic.IsValidColumn(columnString, out errorMsg) != false)
                 {
                     rowString = Console.ReadLine();
                     m_Logic.CheckIfToExitGame(columnString);
-                    if (m_Logic.IsValidRow(rowString, out errorMsg) != false)  
-                    { 
+                    if (m_Logic.IsValidRow(rowString, out errorMsg) != false)
+                    {
                         if (m_Logic.IsCellValid(int.Parse(rowString), int.Parse(columnString), out errorMsg) != false)
                         {
                             location = new MattLocation(int.Parse(rowString) - 1, int.Parse(columnString));
@@ -156,7 +156,7 @@ namespace B20_Ex02
                     }
                 }
 
-                if(errorMsg != string.Empty)
+                if (errorMsg != string.Empty)
                 {
                     result = false;
                     Console.WriteLine(errorMsg);

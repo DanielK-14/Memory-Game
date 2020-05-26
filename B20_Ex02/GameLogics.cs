@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.AccessControl;
 using System.Text;
 
 namespace B20_Ex02
@@ -268,14 +266,7 @@ namespace B20_Ex02
             }
             else
             {
-                if (m_TurnNumber % 2 == 1)
-                {
-                    AddScore(ePlayer.Player1);
-                }
-                else
-                {
-                    AddScore(m_Opponent);
-                }
+                AddScore(GetPlayerTurn);
             }
         }
 
