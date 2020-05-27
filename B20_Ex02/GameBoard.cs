@@ -116,7 +116,7 @@ namespace B20_Ex02
             stringBuilder.AppendLine(LineSeperate('=').ToString());
             for (int row = 0; row < Rows; row++)
             {
-                stringBuilder.Append((m_row+1).ToString() + " |");
+                stringBuilder.Append((row + 1).ToString() + " |");
                 for (int col = 0; col < m_Cols; col++)
                 {
                     if(m_Board[row,col].Visible == true)

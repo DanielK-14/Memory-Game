@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace B20_Ex02
 {
     class GameLogics
     {
+        public static ePlayer s_Opponent;
         private Player m_Player1;
         private Player m_Player2;
         private AIPlayer m_PlayerAI;
-        private static ePlayer m_Opponent;
         private GameBoard m_GameBoard;
+        private List<MattLocation> m_PossibleMovesForAI;
         private int m_TurnNumber;
 
         public enum ePlayer
@@ -26,13 +28,13 @@ namespace B20_Ex02
             {
                 m_Player2 = new Player(i_Player2Name);
                 m_PlayerAI = null;
-                m_Opponent = ePlayer.Player2;
+                s_Opponent = ePlayer.Player2;
             }
             else
             {
                 m_PlayerAI = new AIPlayer();
                 m_Player2 = null;
-                m_Opponent = ePlayer.PlayerAI;
+                s_Opponent = ePlayer.PlayerAI;
             }
             m_TurnNumber = 1;
         }
@@ -53,7 +55,7 @@ namespace B20_Ex02
                 }
                 else
                 {
-                    playerType = m_Opponent;
+                    playerType = s_Opponent;
                 }
 
                 return playerType;
@@ -88,7 +90,7 @@ namespace B20_Ex02
         {
             get
             {
-                return m_Opponent;
+                return s_Opponent;
             }
         }
 
@@ -248,7 +250,7 @@ namespace B20_Ex02
 
         public static void SetOpponentType(int type)
         {
-            m_Opponent = (ePlayer)type;
+            s_Opponent = (ePlayer)type;
         }
 
         public void OpenCard(MattLocation i_Location)
@@ -262,20 +264,70 @@ namespace B20_Ex02
         {
             m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Hide();
             m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Hide();
+            m_PlayerAI.SaveToMemory(i_Location1, m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Key, i_Location2, m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Key);
         }
 
-        public void HumanPlayTurn(MattLocation i_Pick1, MattLocation i_Pick2)
+        public void PlayTurn(MattLocation i_Pick1, MattLocation i_Pick2)
         {
             if (IsPairFound(i_Pick1, i_Pick2) == false)
             {
                 System.Threading.Thread.Sleep(2000);
+                Ex02.ConsoleUtils.Screen.Clear();
                 closeCards(i_Pick1, i_Pick2);
                 m_TurnNumber++;
             }
             else
             {
+                m_GameBoard.CouplesLeft--;
                 AddScore(GetPlayerTurn);
             }
+        }
+
+        public void GetPicksForAIPlayer(out MattLocation io_Pick1, out MattLocation io_Pick2)
+        {
+            if (m_PlayerAI.IsNoMove() == true)
+            {
+                GenerateRandomPick(out io_Pick1);
+                m_PlayerAI.TryFindSecondCard(m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, out io_Pick2);
+                if (io_Pick2 == null)
+                {
+                    GenerateRandomPick(out io_Pick2);
+                }
+            }
+            else
+            {
+                m_PlayerAI.GetMove(out io_Pick1);
+                m_PlayerAI.GetMove(out io_Pick2);
+            }
+        }
+
+        private void GenerateRandomPick(out MattLocation io_Pick)
+        {
+            int randomIndexInPossibleMoves;
+            List<MattLocation> possibleMoves = new List<MattLocation>();
+            Random random = new Random();
+            bool stop = true;
+
+            foreach (var cell in m_GameBoard.Board)
+            {
+                if(cell.Visible == false)
+                {
+                    possibleMoves.Add(cell.Location);
+                }
+            }
+
+            do
+            {
+                randomIndexInPossibleMoves = random.Next(possibleMoves.Count);
+                if(m_PlayerAI.IsCellInMemory(possibleMoves[randomIndexInPossibleMoves]) == true)
+                {
+                    possibleMoves.RemoveAt(randomIndexInPossibleMoves);
+                    stop = false;
+                }
+            } while (stop == false);
+
+            io_Pick = possibleMoves[randomIndexInPossibleMoves];
+            OpenCard(io_Pick);
         }
 
         public void AddScore(ePlayer i_PlayerType)
@@ -314,7 +366,7 @@ namespace B20_Ex02
 The results are:";
             string body = string.Format("First player  {0}  scored is: {1}\n", m_Player1.Name, m_Player1.Score);
 
-            if(m_Opponent == ePlayer.Player2)
+            if(s_Opponent == ePlayer.Player2)
             {
                 opponentBody = string.Format("Second player  {0}  scored: {1}", m_Player2.Name, m_Player2.Score);
             }
@@ -338,7 +390,7 @@ The results are:";
             string opponentName = String.Empty;
             int opponentScore = 0;
 
-            switch(m_Opponent)
+            switch(s_Opponent)
             {
                 case ePlayer.Player2:
                     opponentName = m_Player2.Name;
@@ -367,6 +419,19 @@ The results are:";
             return winnerFormat;
         }
 
+        public void ResetGame()
+        {
+            m_Player1.Reset();
+            if (s_Opponent == ePlayer.Player2)
+            {
+                m_Player2.Reset();
+            }
+            else
+            {
+                m_PlayerAI.Reset();
+            }
+        }
+
         public void CheckIfToExitGame(string input)
         {
             input = input.ToLower();
@@ -380,31 +445,5 @@ The results are:";
         {
             Environment.Exit(1);
         }
-
-        public void AIPlayerMove(out MattLocation i_Pick1, out MattLocation i_Pick2)//////////////////////////////////////////////
-        {
-            int EmptyPlace = m_PlayerAI.NextEmptyPlace();
-            int row = EmptyPlace / m_GameBoard.Rows;
-            int col = EmptyPlace % m_GameBoard.Cols;
-            int index;
-
-            i_Pick1 = new MattLocation(row, col);
-
-            index = m_PlayerAI.GetPair(m_GameBoard.Board[row, col]);
-            row = EmptyPlace / m_GameBoard.Rows;
-            col = EmptyPlace % m_GameBoard.Cols;
-            i_Pick2 = new MattLocation(row, col);
-        }
-
-        public void AddAIMemory(MattLocation i_Pick)
-        {
-
-        }
-
-        public void BuildAIMemory(int i_Rows, int i_columns)
-        {
-            m_PlayerAI.SetMemory(i_Rows, i_columns);
-        }
-
     }
 }

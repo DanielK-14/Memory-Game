@@ -41,5 +41,10 @@
         {
             m_Score++;
         }
+
+        public void Reset()
+        {
+            m_Score = 0;
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace B20_Ex02
             int rows, columns;
 
             chooseAndSetOpponent();
-            if (GameLogics.IsPlayerHuman() == true) ;
+            if (GameLogics.s_Opponent == GameLogics.ePlayer.Player2)
             {
                 secondPlayerName = chooseOpponentName();
             }
@@ -40,18 +40,18 @@ namespace B20_Ex02
                     {
                         pick1 = pickCard();
                         pick2 = pickCard();
-                        m_Logic.HumanPlayTurn(pick1, pick2);
                     }
                     else
                     {
-                        m_Logic.AIPlayerMove()
+                        m_Logic.GetPicksForAIPlayer(out pick1, out pick2);
                     }
-                    
+                    m_Logic.PlayTurn(pick1, pick2);
                 }
 
                 m_Logic.PrintEndGameScreen();
                 do
                 {
+                    Ex02.ConsoleUtils.Screen.Clear();
                     Console.WriteLine("Would you like to play again?");
                     string input = Console.ReadLine();
                     toContinue = m_Logic.CheckIfContinue(input, out errorMsg);

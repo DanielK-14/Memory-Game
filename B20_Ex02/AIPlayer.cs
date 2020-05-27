@@ -15,6 +15,8 @@ namespace B20_Ex02
         public AIPlayer()
         {
             m_Score = 0;
+            m_Memory = new List<MemoryCell>();
+            m_Moves = new List<MemoryCell>();
         }
 
         public string Name
@@ -32,16 +34,6 @@ namespace B20_Ex02
             }
         }
 
-        public MemoryCell GetMove()
-        {
-            if (m_Moves.Count != 0)
-            {
-                MemoryCell temp = m_Moves[0];
-                m_Moves.RemoveAt(0);
-                return temp;
-            }
-        }
-
         public bool IsNoMove()
         {
             bool result = false;
@@ -56,8 +48,9 @@ namespace B20_Ex02
         {
             m_Score++;
         }
-        public void AddToMemory(MemoryCell cell)
+        public void AddToMemory(MattLocation i_Location, int i_CardKey)
         {
+            MemoryCell cell = new MemoryCell(i_Location, i_CardKey);
             m_Memory.Add(cell);
         }
         public bool IsCellInMemory(MattLocation i_Location)
@@ -82,10 +75,10 @@ namespace B20_Ex02
         public void SaveToMemory(MattLocation i_Location1, int i_CardKey1, MattLocation i_Location2, int i_CardKey2)
         {
 
-            CheckIfNeedToMemory(i_Location1, i_CardKey1);
-            CheckIfNeedToMemory(i_Location2, i_CardKey2);
+            SaveMemoryOrAddMove(i_Location1, i_CardKey1);
+            SaveMemoryOrAddMove(i_Location2, i_CardKey2);
         }
-        public void CheckIfNeedToMemory(MattLocation i_Location, int i_CardKey)
+        public void SaveMemoryOrAddMove(MattLocation i_Location, int i_CardKey)
         {
             if (IsCellInMemory(i_Location) == false)
             {
@@ -99,19 +92,55 @@ namespace B20_Ex02
         public bool FindMatchCell(MemoryCell i_Cell)
         {
             bool result = false;
-            foreach(var cellMemorey in m_Memory)
+            foreach(var cellMemory in m_Memory)
             {
-                if (cellMemorey.CardKey == i_Cell.CardKey)
+                if (cellMemory.CardKey == i_Cell.CardKey)
                 {
                     m_Moves.Add(i_Cell);
-                    m_Moves.Add(cellMemorey);
-                    m_Memory.Remove(cellMemorey);
+                    m_Moves.Add(cellMemory);
+                    m_Memory.Remove(cellMemory);
                     result = true;
                     break;
                 }
             }
             return result;
-        }        
+        }    
+        
+        public void TryFindSecondCard(int i_CardKey, out MattLocation io_Pick2)
+        {
+            io_Pick2 = null;
+
+            foreach (var cellMemory in m_Memory)
+            {
+                if (cellMemory.CardKey == i_CardKey)
+                {
+                    io_Pick2 = cellMemory.Location;
+                    break;
+                }
+            }
+        }
+
+        public void GetMove(out MattLocation io_Pick)
+        {
+            io_Pick = null;
+            if (m_Moves.Count != 0)
+            {
+                io_Pick = m_Moves[0].Location;
+                m_Moves.RemoveAt(0);
+            }
+        }
+
+        public void Reset()
+        {
+            if(m_Memory != default && m_Memory.Count != 0)
+            {
+                m_Memory.Clear();
+            }
+            if(m_Moves != default && m_Moves.Count != 0)
+            {
+                m_Moves.Clear();
+            }
+        }
 
         //public void SetMemory(int i_Rows, int i_Columns)
         //{
