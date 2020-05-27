@@ -142,6 +142,12 @@ namespace B20_Ex02
             }
         }
 
+        public string GetInfo()
+        {
+            string info = m_Name + " with current score: " + m_Score;
+            return info;
+        }
+
         //public void SetMemory(int i_Rows, int i_Columns)
         //{
         //    m_Memory = new List<BoardCell>(i_Rows * i_Columns);

@@ -26,6 +26,12 @@
             }
         }
 
+        public string GetInfo()
+        {
+            string info = m_Name + " with current score: " + m_Score;
+            return info;
+        }
+
         public int Score
         {
             get

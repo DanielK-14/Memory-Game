@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace B20_Ex02
 {
@@ -38,6 +39,7 @@ namespace B20_Ex02
                 {
                     if (m_Logic.IsPlayerHumanTurn())
                     {
+                        Ex02.ConsoleUtils.Screen.Clear();
                         pick1 = pickCard();
                         pick2 = pickCard();
                     }
@@ -48,19 +50,21 @@ namespace B20_Ex02
                     m_Logic.PlayTurn(pick1, pick2);
                 }
 
+                Ex02.ConsoleUtils.Screen.Clear();
                 m_Logic.PrintEndGameScreen();
                 do
                 {
-                    Ex02.ConsoleUtils.Screen.Clear();
                     Console.WriteLine("Would you like to play again?");
                     string input = Console.ReadLine();
                     toContinue = m_Logic.CheckIfContinue(input, out errorMsg);
                     if (errorMsg != string.Empty)
                     {
+                        Ex02.ConsoleUtils.Screen.Clear();
                         Console.WriteLine(errorMsg);
                     }
                 }
                 while (errorMsg != string.Empty);
+                m_Logic.ResetGame();
             }
             while (toContinue == true);
 
@@ -115,12 +119,12 @@ namespace B20_Ex02
             {
                 Console.WriteLine("Please enter board rows size and then columns size:");
                 rows = Console.ReadLine();
-                result = GameLogics.IsNumeric(rows, out errorMsg);
+                result = GameLogics.IsSizeBoardCorrect(rows, out errorMsg);
 
                 if (result == true)
                 {
                     columns = Console.ReadLine();
-                    result = GameLogics.IsNumeric(columns, out errorMsg);
+                    result = GameLogics.IsSizeBoardCorrect(columns, out errorMsg);
                     if (result == true)
                     {
                         result = GameLogics.IsBoardSizesValid(int.Parse(rows), int.Parse(columns), out errorMsg);
@@ -129,6 +133,7 @@ namespace B20_Ex02
 
                 if (result == false)
                 {
+                    Ex02.ConsoleUtils.Screen.Clear();
                     Console.WriteLine(errorMsg);
                 }
             }
@@ -141,22 +146,23 @@ namespace B20_Ex02
         public MattLocation pickCard()
         {
             string errorMsg;
-            string rowString, columnString;
+            string cardLocation;
             MattLocation location = null;
             bool result = true;
             do
             {
                 m_Logic.PrintBoard();
+                Console.WriteLine(m_Logic.PlayerTurnInfo());
                 Console.WriteLine("Please enter column character and the row number to open a card:");
-                columnString = Console.ReadLine();
-                if (m_Logic.IsValidColumn(columnString, out errorMsg) != false)
+                cardLocation = Console.ReadLine();
+                if (m_Logic.IsValidColumn(cardLocation, out errorMsg) != false)
                 {
-                    rowString = Console.ReadLine();
-                    if (m_Logic.IsValidRow(rowString, out errorMsg) != false)
+                    if (m_Logic.IsValidRow(cardLocation, out errorMsg) != false)
                     {
-                        if (m_Logic.IsCellValid(int.Parse(rowString), int.Parse(columnString), out errorMsg) != false)
-                        {
-                            location = new MattLocation(int.Parse(rowString) - 1, int.Parse(columnString));
+                        cardLocation = cardLocation.ToUpper();
+                        if (m_Logic.IsCellValid(Convert.ToInt32(cardLocation[1] - '0') - 1, Convert.ToInt32(cardLocation[0] - 'A'), out errorMsg) != false)
+                        { 
+                            location = new MattLocation(Convert.ToInt32(cardLocation[1] - '0') - 1, Convert.ToInt32(cardLocation[0] - 'A'));
                             m_Logic.OpenCard(location);
                         }
                     }
@@ -164,8 +170,13 @@ namespace B20_Ex02
 
                 if (errorMsg != string.Empty)
                 {
+                    Ex02.ConsoleUtils.Screen.Clear();
                     result = false;
                     Console.WriteLine(errorMsg);
+                }
+                else
+                {
+                    result = true;
                 }
             }
             while (result == false);

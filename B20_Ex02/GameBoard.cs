@@ -144,10 +144,9 @@ namespace B20_Ex02
             stringBuilder.Append("  ");
             for (int i = 0; i < m_Cols; i++)
             {
-                stringBuilder.Append(i_SeprateCharacter);
-                stringBuilder.Append(i_SeprateCharacter, 3);
-                stringBuilder.Append(i_SeprateCharacter);
+                stringBuilder.Append(i_SeprateCharacter, 4);
             }
+            stringBuilder.Append(i_SeprateCharacter);
 
             return stringBuilder;
         }

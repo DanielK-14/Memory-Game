@@ -7,6 +7,7 @@ namespace B20_Ex02
     class GameLogics
     {
         public static ePlayer s_Opponent;
+
         private Player m_Player1;
         private Player m_Player2;
         private AIPlayer m_PlayerAI;
@@ -100,7 +101,13 @@ namespace B20_Ex02
             io_ErrorMsg = string.Empty;
             if (i_Rows < 4 || i_Rows > 6 || i_Cols < 4 || i_Cols > 6)
             {
-                io_ErrorMsg = "Values not in range";
+                io_ErrorMsg = "- - - - Values not in range - - - -\n";
+                result = false;
+            }
+
+            else if(i_Rows * i_Cols % 2 == 1)
+            {
+                io_ErrorMsg = "- - - - Odd amount of cells - - - -\n";
                 result = false;
             }
 
@@ -127,17 +134,7 @@ namespace B20_Ex02
         {
             bool result = true;
             io_ErrorMsg = string.Empty;
-            if (i_Rows > m_GameBoard.Rows || i_Rows < 0)
-            {
-                result = false;
-                io_ErrorMsg = "Row incorrect";
-            }
-            else if(i_Cols > m_GameBoard.Cols || i_Cols < 0)
-            {
-                result = false;
-                io_ErrorMsg = "Column incorrect";
-            }
-            else if(m_GameBoard.Board[i_Rows, i_Cols].Visible == true)
+            if(m_GameBoard.Board[i_Rows, i_Cols].Visible == true)
             {
                 result = false;
                 io_ErrorMsg = "Card has been picked already";
@@ -151,18 +148,37 @@ namespace B20_Ex02
             return (GetPlayerTurn != ePlayer.PlayerAI);
         }
 
-        public static bool IsNumeric(string input, out string io_ErrorMsg)
+        public static bool IsNumeric(char input, out string io_ErrorMsg)
         {
             io_ErrorMsg = string.Empty;
             bool result = true;
-            foreach(var character in input)
+            if(char.IsDigit(input) == false)
             {
-                if(char.IsDigit(character) == false)
-                {
-                    result = false;
-                    io_ErrorMsg = "Not numeric input";
-                    break;
-                }
+                result = false;
+                io_ErrorMsg = "Row input not numeric.\n";
+            }
+
+            return result;
+        }
+
+        public static bool IsSizeBoardCorrect(string input, out string io_ErrorMsg)
+        {
+            bool result = true;
+            if(input.Length != 1)
+            {
+                result = false;
+                io_ErrorMsg = "Wrong input\n";
+            }
+
+            if(IsNumeric(input[0], out io_ErrorMsg) == false)
+            {
+                result = false;
+            }
+
+            if(int.Parse(input) > 6 || int.Parse(input) < 4)
+            {
+                result = false;
+                io_ErrorMsg = "Input is not in valid range";
             }
 
             return result;
@@ -176,7 +192,7 @@ namespace B20_Ex02
 
             CheckIfToExitGame(input);
 
-            if (input.Length > 1 || input == string.Empty || int.Parse(io_ErrorMsg) - 65 > m_GameBoard.Cols || int.Parse(io_ErrorMsg) - 65 < 0)
+            if (input.Length != 2 || Convert.ToInt32(input[0]) - 65 > m_GameBoard.Cols || Convert.ToInt32(input[0]) - 65 < 0)   //input.Length == string.Empty
             {
                 result = false;
                 io_ErrorMsg = "Column does not exsit";
@@ -192,15 +208,15 @@ namespace B20_Ex02
 
             CheckIfToExitGame(input);
 
-            if (IsNumeric(input, out io_ErrorMsg) == false)
+            if (IsNumeric(input[1], out io_ErrorMsg) == false)
             {
                 result = false;
                 io_ErrorMsg = "Input not numeric";
             }
-            else if(input == string.Empty || int.Parse(io_ErrorMsg) > m_GameBoard.Rows || int.Parse(io_ErrorMsg) - 1 < 0)
+            else if(Convert.ToInt32(input[1] - '0') > m_GameBoard.Rows || Convert.ToInt32(input[1] - '0') - 1 < 0)
             {
                 result = false;
-                io_ErrorMsg = "Wrong input for row";
+                io_ErrorMsg = "Row does not exsit";
             }
 
             return result;
@@ -257,18 +273,21 @@ namespace B20_Ex02
         {
             m_GameBoard.Board[i_Location.Row, i_Location.Col].Show();
             Ex02.ConsoleUtils.Screen.Clear();
-            m_GameBoard.Print();
         }
 
         public void closeCards(MattLocation i_Location1, MattLocation i_Location2)
         {
             m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Hide();
             m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Hide();
-            m_PlayerAI.SaveToMemory(i_Location1, m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Key, i_Location2, m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Key);
+            if (s_Opponent == ePlayer.PlayerAI)
+            {
+                m_PlayerAI.SaveToMemory(i_Location1, m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Key, i_Location2, m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Key);
+            }
         }
 
         public void PlayTurn(MattLocation i_Pick1, MattLocation i_Pick2)
         {
+            m_GameBoard.Print();
             if (IsPairFound(i_Pick1, i_Pick2) == false)
             {
                 System.Threading.Thread.Sleep(2000);
@@ -281,6 +300,27 @@ namespace B20_Ex02
                 m_GameBoard.CouplesLeft--;
                 AddScore(GetPlayerTurn);
             }
+        }
+
+        public string PlayerTurnInfo()
+        {
+            string playerInfo = "Current turn: ";
+            switch (GetPlayerTurn)
+            {
+                case ePlayer.Player1:
+                    playerInfo += m_Player1.GetInfo();
+                    break;
+
+                case ePlayer.Player2:
+                    playerInfo += m_Player2.GetInfo();
+                    break;
+
+                case ePlayer.PlayerAI:
+                    playerInfo += m_Player2.GetInfo();
+                    break;
+            }
+
+            return playerInfo;
         }
 
         public void GetPicksForAIPlayer(out MattLocation io_Pick1, out MattLocation io_Pick2)
@@ -364,7 +404,7 @@ namespace B20_Ex02
             string opponentBody;
             string headline = @"Game ended!
 The results are:";
-            string body = string.Format("First player  {0}  scored is: {1}\n", m_Player1.Name, m_Player1.Score);
+            string body = string.Format("First player  {0}  scored: {1}\n", m_Player1.Name, m_Player1.Score);
 
             if(s_Opponent == ePlayer.Player2)
             {
@@ -435,7 +475,7 @@ The results are:";
         public void CheckIfToExitGame(string input)
         {
             input = input.ToLower();
-            if(input == "q")
+            if(input == "q" || input == "quit")
             {
                 ExitGame();
             }
