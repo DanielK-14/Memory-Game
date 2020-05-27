@@ -144,9 +144,9 @@ namespace B20_Ex02
             return result;
         }
 
-        public static bool IsPlayerHuman()
+        public bool IsPlayerHumanTurn()
         {
-            return (m_Opponent == ePlayer.Player2);
+            return (GetPlayerTurn != ePlayer.PlayerAI);
         }
 
         public static bool IsNumeric(string input, out string io_ErrorMsg)
@@ -213,7 +213,7 @@ namespace B20_Ex02
         public bool CheckIfContinue(string input, out string io_ErrorMsg)
         {
             io_ErrorMsg = string.Empty;
-            bool result = true;
+            bool result;
             switch(input.ToLower())
             {
                 case "yes":
@@ -260,12 +260,11 @@ namespace B20_Ex02
 
         public void CloseCards(MattLocation i_Location1, MattLocation i_Location2)
         {
-
             m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Hide();
             m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Hide();
         }
 
-        public void PlayTurn(MattLocation i_Pick1, MattLocation i_Pick2)
+        public void HumanPlayTurn(MattLocation i_Pick1, MattLocation i_Pick2)
         {
             if (IsPairFound(i_Pick1, i_Pick2) == false)
             {
@@ -275,18 +274,9 @@ namespace B20_Ex02
             }
             else
             {
-                if (m_TurnNumber % 2 == 1)
-                {
-                    AddScore(ePlayer.Player1);
-                    AddAIMemory(i_Pick1, i_Pick2);
-                }
-                else
-                {
-                    AddScore(m_Opponent);
-                }
+                AddScore(GetPlayerTurn);
             }
         }
-
 
         public void AddScore(ePlayer i_PlayerType)
         {
@@ -391,7 +381,7 @@ The results are:";
             Environment.Exit(1);
         }
 
-        public void AIPlayerMove(out MattLocation i_Pick1, out MattLocation i_Pick2)//////////////////////////////////////////////////////////////
+        public void AIPlayerMove(out MattLocation i_Pick1, out MattLocation i_Pick2)//////////////////////////////////////////////
         {
             int EmptyPlace = m_PlayerAI.NextEmptyPlace();
             int row = EmptyPlace / m_GameBoard.Rows;
@@ -404,7 +394,6 @@ The results are:";
             row = EmptyPlace / m_GameBoard.Rows;
             col = EmptyPlace % m_GameBoard.Cols;
             i_Pick2 = new MattLocation(row, col);
-
         }
 
         public void AddAIMemory(MattLocation i_Pick)

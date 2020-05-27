@@ -36,18 +36,17 @@ namespace B20_Ex02
 
                 while (m_Logic.IsGameOver() == false)
                 {
-                    pick1 = pickCard();
-                    pick2 = pickCard();
-                    m_Logic.PlayTurn(pick1, pick2);
-                    //if (GameLogics.IsPlayerHuman() == true)
-                    //{
-                    //    pick1 = PickCard();
-                    //    pick2 = PickCard();
-                    //}
-                    //else
-                    //{
-                    //    GameLogics.AIPlayerMove(out pick1, out pick2);
-                    //}
+                    if (m_Logic.IsPlayerHumanTurn())
+                    {
+                        pick1 = pickCard();
+                        pick2 = pickCard();
+                        m_Logic.HumanPlayTurn(pick1, pick2);
+                    }
+                    else
+                    {
+                        m_Logic.AIPlayerMove()
+                    }
+                    
                 }
 
                 m_Logic.PrintEndGameScreen();
