@@ -42,6 +42,7 @@
     <Compile Include="GameBoard.cs" />
     <Compile Include="GameLogics.cs" />
     <Compile Include="MattLocation.cs" />
+    <Compile Include="MemoryCell.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="UI.cs" />

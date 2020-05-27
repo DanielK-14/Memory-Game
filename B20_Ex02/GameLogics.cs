@@ -258,7 +258,7 @@ namespace B20_Ex02
             m_GameBoard.Print();
         }
 
-        public void CloseCards(MattLocation i_Location1, MattLocation i_Location2)
+        public void closeCards(MattLocation i_Location1, MattLocation i_Location2)
         {
             m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Hide();
             m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Hide();
@@ -269,7 +269,7 @@ namespace B20_Ex02
             if (IsPairFound(i_Pick1, i_Pick2) == false)
             {
                 System.Threading.Thread.Sleep(2000);
-                CloseCards(i_Pick1, i_Pick2);
+                closeCards(i_Pick1, i_Pick2);
                 m_TurnNumber++;
             }
             else
