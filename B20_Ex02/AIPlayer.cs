@@ -26,6 +26,7 @@ namespace B20_Ex02
                 return m_Name;
             }
         }
+
         public int Score
         {
             get
@@ -48,11 +49,13 @@ namespace B20_Ex02
         {
             m_Score++;
         }
+
         public void AddToMemory(MattLocation i_Location, int i_CardKey)
         {
             MemoryCell cell = new MemoryCell(i_Location, i_CardKey);
             m_Memory.Add(cell);
         }
+
         public bool IsCellInMemory(MattLocation i_Location)
         {
             bool result = false;
@@ -66,6 +69,7 @@ namespace B20_Ex02
             }
             return result;
         }
+
         public void AddNewMove(MemoryCell i_Move1, MemoryCell i_Move2)
         {
             m_Moves.Add(i_Move1);
@@ -78,6 +82,7 @@ namespace B20_Ex02
             SaveMemoryOrAddMove(i_Location1, i_CardKey1);
             SaveMemoryOrAddMove(i_Location2, i_CardKey2);
         }
+
         public void SaveMemoryOrAddMove(MattLocation i_Location, int i_CardKey)
         {
             if (IsCellInMemory(i_Location) == false)
@@ -89,6 +94,7 @@ namespace B20_Ex02
                 }
             }
         }
+
         public bool FindMatchCell(MemoryCell i_Cell)
         {
             bool result = false;
@@ -140,12 +146,6 @@ namespace B20_Ex02
             {
                 m_Moves.Clear();
             }
-        }
-
-        public string GetInfo()
-        {
-            string info = m_Name + " with current score: " + m_Score;
-            return info;
         }
 
         //public void SetMemory(int i_Rows, int i_Columns)

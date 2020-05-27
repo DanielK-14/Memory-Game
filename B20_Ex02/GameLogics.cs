@@ -12,7 +12,6 @@ namespace B20_Ex02
         private Player m_Player2;
         private AIPlayer m_PlayerAI;
         private GameBoard m_GameBoard;
-        private List<MattLocation> m_PossibleMovesForAI;
         private int m_TurnNumber;
 
         public enum ePlayer
@@ -43,6 +42,14 @@ namespace B20_Ex02
         public void SetNewBoard(int i_Rows, int i_Cols)
         {
             m_GameBoard = new GameBoard(i_Rows, i_Cols);
+        }
+
+        public GameBoard Gameboard
+        {
+            get
+            {
+                return m_GameBoard;
+            }
         }
 
         public ePlayer GetPlayerTurn
@@ -137,7 +144,7 @@ namespace B20_Ex02
             if(m_GameBoard.Board[i_Rows, i_Cols].Visible == true)
             {
                 result = false;
-                io_ErrorMsg = "Card has been picked already";
+                io_ErrorMsg = "- - - - Card has been picked already - - - - \n";
             }
 
             return result;
@@ -155,7 +162,7 @@ namespace B20_Ex02
             if(char.IsDigit(input) == false)
             {
                 result = false;
-                io_ErrorMsg = "Row input not numeric.\n";
+                io_ErrorMsg = "- - - - Row input not numeric - - - - \n";
             }
 
             return result;
@@ -167,7 +174,7 @@ namespace B20_Ex02
             if(input.Length != 1)
             {
                 result = false;
-                io_ErrorMsg = "Wrong input\n";
+                io_ErrorMsg = "- - - - Wrong input - - - - \n";
             }
 
             if(IsNumeric(input[0], out io_ErrorMsg) == false)
@@ -178,7 +185,7 @@ namespace B20_Ex02
             if(int.Parse(input) > 6 || int.Parse(input) < 4)
             {
                 result = false;
-                io_ErrorMsg = "Input is not in valid range";
+                io_ErrorMsg = "- - - - Input is not in valid range - - - - \n";
             }
 
             return result;
@@ -195,7 +202,7 @@ namespace B20_Ex02
             if (input.Length != 2 || Convert.ToInt32(input[0]) - 65 > m_GameBoard.Cols || Convert.ToInt32(input[0]) - 65 < 0)   //input.Length == string.Empty
             {
                 result = false;
-                io_ErrorMsg = "Column does not exsit";
+                io_ErrorMsg = "- - - - Column does not exsit - - - - \n";
             }
             
             return result;
@@ -211,12 +218,12 @@ namespace B20_Ex02
             if (IsNumeric(input[1], out io_ErrorMsg) == false)
             {
                 result = false;
-                io_ErrorMsg = "Input not numeric";
+                io_ErrorMsg = "- - - - Input not numeric - - - - \n";
             }
             else if(Convert.ToInt32(input[1] - '0') > m_GameBoard.Rows || Convert.ToInt32(input[1] - '0') - 1 < 0)
             {
                 result = false;
-                io_ErrorMsg = "Row does not exsit";
+                io_ErrorMsg = "- - - - Row does not exsit - - - - \n";
             }
 
             return result;
@@ -243,7 +250,7 @@ namespace B20_Ex02
                     break;
 
                 default:
-                    io_ErrorMsg = "Wrong input";
+                    io_ErrorMsg = "- - - - Wrong input - - - - \n";
                     result = false;
                     break;
             }
@@ -257,7 +264,7 @@ namespace B20_Ex02
             io_ErrorMsg = string.Empty;
             if (choise != "0" && choise != "1")
             {
-                io_ErrorMsg = "Invalid choise";
+                io_ErrorMsg = "- - - - Invalid choise - - - - \n";
                 result = false;
             }
 
@@ -287,7 +294,6 @@ namespace B20_Ex02
 
         public void PlayTurn(MattLocation i_Pick1, MattLocation i_Pick2)
         {
-            m_GameBoard.Print();
             if (IsPairFound(i_Pick1, i_Pick2) == false)
             {
                 System.Threading.Thread.Sleep(2000);
@@ -300,27 +306,6 @@ namespace B20_Ex02
                 m_GameBoard.CouplesLeft--;
                 AddScore(GetPlayerTurn);
             }
-        }
-
-        public string PlayerTurnInfo()
-        {
-            string playerInfo = "Current turn: ";
-            switch (GetPlayerTurn)
-            {
-                case ePlayer.Player1:
-                    playerInfo += m_Player1.GetInfo();
-                    break;
-
-                case ePlayer.Player2:
-                    playerInfo += m_Player2.GetInfo();
-                    break;
-
-                case ePlayer.PlayerAI:
-                    playerInfo += m_Player2.GetInfo();
-                    break;
-            }
-
-            return playerInfo;
         }
 
         public void GetPicksForAIPlayer(out MattLocation io_Pick1, out MattLocation io_Pick2)
@@ -386,77 +371,6 @@ namespace B20_Ex02
                         m_PlayerAI.AddScore();
                     break;
             }
-        }
-
-        public void PrintBoard()
-        {
-            m_GameBoard.Print();
-        }
-
-        public void PrintEndGameScreen()
-        {
-            Console.WriteLine(BuildEndGameScreenPrint());
-        }
-
-        public StringBuilder BuildEndGameScreenPrint()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            string opponentBody;
-            string headline = @"Game ended!
-The results are:";
-            string body = string.Format("First player  {0}  scored: {1}\n", m_Player1.Name, m_Player1.Score);
-
-            if(s_Opponent == ePlayer.Player2)
-            {
-                opponentBody = string.Format("Second player  {0}  scored: {1}", m_Player2.Name, m_Player2.Score);
-            }
-            else
-            {
-                opponentBody = string.Format("Second player  {0}  scored: {1}", m_PlayerAI.Name, m_PlayerAI.Score);
-            }
-
-            body += opponentBody;
-
-            stringBuilder.AppendLine(headline);
-            stringBuilder.AppendLine(body);
-            stringBuilder.AppendLine(buildWinnerFormat());
-
-            return stringBuilder;
-        }
-
-        private string buildWinnerFormat()
-        {
-            string winnerFormat;
-            string opponentName = String.Empty;
-            int opponentScore = 0;
-
-            switch(s_Opponent)
-            {
-                case ePlayer.Player2:
-                    opponentName = m_Player2.Name;
-                    opponentScore = m_Player2.Score;
-                    break;
-
-                case ePlayer.PlayerAI:
-                    opponentName = m_PlayerAI.Name;
-                    opponentScore = m_PlayerAI.Score;
-                    break;
-            }
-
-            if (m_Player1.Score > opponentScore)
-            {
-                winnerFormat = String.Format("{0} has won the game! Congratulations!", m_Player1.Name);
-            }
-            else if (m_Player1.Score < opponentScore)
-            {
-                winnerFormat = String.Format("{0} has won the game! Congratulations!", opponentName);
-            }
-            else
-            {
-                winnerFormat = "No one won! It's a TIE.";
-            }
-
-            return winnerFormat;
         }
 
         public void ResetGame()
