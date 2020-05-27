@@ -266,9 +266,18 @@ namespace B20_Ex02
             }
             else
             {
-                AddScore(GetPlayerTurn);
+                if (m_TurnNumber % 2 == 1)
+                {
+                    AddScore(ePlayer.Player1);
+                    AddAIMemory(i_Pick1, i_Pick2);
+                }
+                else
+                {
+                    AddScore(m_Opponent);
+                }
             }
         }
+
 
         public void AddScore(ePlayer i_PlayerType)
         {
@@ -372,5 +381,32 @@ The results are:";
         {
             Environment.Exit(1);
         }
+
+        public void AIPlayerMove(out MattLocation i_Pick1, out MattLocation i_Pick2)//////////////////////////////////////////////////////////////
+        {
+            int EmptyPlace = m_PlayerAI.NextEmptyPlace();
+            int row = EmptyPlace / m_GameBoard.Rows;
+            int col = EmptyPlace % m_GameBoard.Cols;
+            int index;
+
+            i_Pick1 = new MattLocation(row, col);
+
+            index = m_PlayerAI.GetPair(m_GameBoard.Board[row, col]);
+            row = EmptyPlace / m_GameBoard.Rows;
+            col = EmptyPlace % m_GameBoard.Cols;
+            i_Pick2 = new MattLocation(row, col);
+
+        }
+
+        public void AddAIMemory(MattLocation i_Pick)
+        {
+
+        }
+
+        public void BuildAIMemory(int i_Rows, int i_columns)
+        {
+            m_PlayerAI.SetMemory(i_Rows, i_columns);
+        }
+
     }
 }
