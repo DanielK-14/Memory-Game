@@ -135,6 +135,11 @@ namespace B20_Ex02
                 result = false;
                 io_ErrorMsg = "Column incorrect";
             }
+            else if(m_GameBoard.Board[i_Rows, i_Cols].Visible == true)
+            {
+                result = false;
+                io_ErrorMsg = "Card has been picked already";
+            }
 
             return result;
         }
@@ -167,6 +172,8 @@ namespace B20_Ex02
             bool result = true;
             input = input.ToUpper();
 
+            CheckIfToExitGame(input);
+
             if (input.Length > 1 || input == string.Empty || int.Parse(io_ErrorMsg) - 65 > m_GameBoard.Cols || int.Parse(io_ErrorMsg) - 65 < 0)
             {
                 result = false;
@@ -180,8 +187,10 @@ namespace B20_Ex02
         {
             io_ErrorMsg = string.Empty;
             bool result = true;
-            
-            if(IsNumeric(input, out io_ErrorMsg) == false)
+
+            CheckIfToExitGame(input);
+
+            if (IsNumeric(input, out io_ErrorMsg) == false)
             {
                 result = false;
                 io_ErrorMsg = "Input not numeric";

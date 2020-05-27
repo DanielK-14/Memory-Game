@@ -8,7 +8,8 @@ namespace B20_Ex02
     {
         static void Main()
         {
-           
+            UI ui = new UI();
+            ui.StartMemoryGame();
 
         }
     }

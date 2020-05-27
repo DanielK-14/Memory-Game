@@ -6,38 +6,38 @@ namespace B20_Ex02
     {
         private GameLogics m_Logic;
 
-        public void StartScreen()
+        public void StartMemoryGame()
         {
-            string firstPlayerName = GetPlayerName();
+            string firstPlayerName = getPlayerName();
             string secondPlayerName = string.Empty;
             int rows, columns;
 
-            ChooseAndSetOpponent();
+            chooseAndSetOpponent();
             if (GameLogics.IsPlayerHuman() == true) ;
             {
-                secondPlayerName = ChooseOpponentName();
+                secondPlayerName = chooseOpponentName();
             }
 
             m_Logic = new GameLogics(firstPlayerName, secondPlayerName);
-            PlayGame();
+            playGame();
         }
 
-        public void PlayGame()
+        private void playGame()
         {
             string errorMsg;
             bool toContinue;
             int rows, columns;
             do
             {
-                GetBoardSize(out rows, out columns);
+                getBoardSize(out rows, out columns);
                 m_Logic.SetNewBoard(rows, columns);
                 MattLocation pick1;
                 MattLocation pick2;
 
                 while (m_Logic.IsGameOver() == false)
                 {
-                    pick1 = PickCard();
-                    pick2 = PickCard();
+                    pick1 = pickCard();
+                    pick2 = pickCard();
                     m_Logic.PlayTurn(pick1, pick2);
                 }
 
@@ -59,14 +59,14 @@ namespace B20_Ex02
             m_Logic.ExitGame();
         }
 
-        public string GetPlayerName()
+        private string getPlayerName()
         {
             Console.WriteLine("Please enter first player name: ");
             string name = Console.ReadLine();
             return name;
         }
 
-        public void ChooseAndSetOpponent()
+        private void chooseAndSetOpponent()
         {
             string errorMsg;
             bool result;
@@ -86,7 +86,7 @@ namespace B20_Ex02
             GameLogics.SetOpponentType(int.Parse(choiseString));
         }
 
-        public string ChooseOpponentName()
+        private string chooseOpponentName()
         {
             string name;
 
@@ -96,7 +96,7 @@ namespace B20_Ex02
             return name;
         }
 
-        public void GetBoardSize(out int io_Rows, out int io_Columns)
+        private void getBoardSize(out int io_Rows, out int io_Columns)
         {
             string errorMsg;
             bool result;
@@ -130,7 +130,7 @@ namespace B20_Ex02
             io_Columns = int.Parse(columns);
         }
 
-        public MattLocation PickCard()
+        public MattLocation pickCard()
         {
             string errorMsg;
             string rowString, columnString;
@@ -141,11 +141,9 @@ namespace B20_Ex02
                 m_Logic.PrintBoard();
                 Console.WriteLine("Please enter column character and the row number to open a card:");
                 columnString = Console.ReadLine();
-                m_Logic.CheckIfToExitGame(columnString);
                 if (m_Logic.IsValidColumn(columnString, out errorMsg) != false)
                 {
                     rowString = Console.ReadLine();
-                    m_Logic.CheckIfToExitGame(columnString);
                     if (m_Logic.IsValidRow(rowString, out errorMsg) != false)
                     {
                         if (m_Logic.IsCellValid(int.Parse(rowString), int.Parse(columnString), out errorMsg) != false)
