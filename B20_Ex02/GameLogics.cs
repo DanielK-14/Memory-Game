@@ -262,7 +262,7 @@ namespace B20_Ex02
         {
             bool result = true;
             io_ErrorMsg = string.Empty;
-            if (choise != "0" && choise != "1")
+            if (choise != "2" && choise != "1")
             {
                 io_ErrorMsg = "- - - - Invalid choise - - - - \n";
                 result = false;
@@ -317,6 +317,7 @@ namespace B20_Ex02
                 if (io_Pick2 == null)
                 {
                     GenerateRandomPick(out io_Pick2);
+                    m_PlayerAI.SaveToMemory(io_Pick1, m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, io_Pick2, m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key);
                 }
             }
             else

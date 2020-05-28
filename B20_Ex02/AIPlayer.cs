@@ -121,6 +121,7 @@ namespace B20_Ex02
                 if (cellMemory.CardKey == i_CardKey)
                 {
                     io_Pick2 = cellMemory.Location;
+                    m_Memory.Remove(cellMemory);//delete cellMemory.location from memory
                     break;
                 }
             }
