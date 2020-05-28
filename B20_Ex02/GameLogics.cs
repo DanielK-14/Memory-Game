@@ -297,7 +297,7 @@ namespace B20_Ex02
             m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Hide();
             if (s_Opponent == ePlayer.PlayerAI)
             {
-                savePicksToPlayerAIMemory(i_Location1, m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Key, i_Location2, m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Key);
+                saveToMemory(i_Location1, m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Key, i_Location2, m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Key);
             }
         }
 
@@ -323,7 +323,7 @@ namespace B20_Ex02
         }
 
         //need
-        private void deleteFromMemoryOfPlayerAI(MattLocation i_Pick1, MattLocation i_Pick2)
+        private void deleteFromMemoryAndMovesOfPlayerAI(MattLocation i_Pick1, MattLocation i_Pick2)
         {
             if (m_PlayerAI.IsCellInMemory(i_Pick1) == true)
             {
@@ -334,23 +334,36 @@ namespace B20_Ex02
             {
                 m_PlayerAI.Memory.Remove(new MemoryCell(i_Pick2, m_GameBoard.Board[i_Pick2.Row, i_Pick2.Col].Key));
             }
-        }
 
-        //need
-        private void saveMemory(MattLocation i_Location, int i_CardKey)
-        {
-            if (m_PlayerAI.IsCellInMemory(i_Location) == false)
+            if(m_PlayerAI.IsCellInMoves(i_Pick1) == true)
             {
-                MemoryCell temp = new MemoryCell(i_Location, i_CardKey);
-                m_PlayerAI.Memory.Add(temp);
+                m_PlayerAI.Moves.Remove(new MemoryCell(i_Pick1, m_GameBoard.Board[i_Pick1.Row, i_Pick1.Col].Key));
+            }
+
+            if (m_PlayerAI.IsCellInMoves(i_Pick2) == true)
+            {
+                m_PlayerAI.Moves.Remove(new MemoryCell(i_Pick2, m_GameBoard.Board[i_Pick2.Row, i_Pick2.Col].Key));
             }
         }
 
         //need
-        private void savePicksToPlayerAIMemory(MattLocation i_Location1, int i_CardKey1, MattLocation i_Location2, int i_CardKey2)
+        private void saveMemoryOrAddMove(MattLocation i_Location, int i_CardKey)
         {
-            saveMemory(i_Location1, i_CardKey1);
-            saveMemory(i_Location2, i_CardKey2);
+            if (m_PlayerAI.IsCellInMemory(i_Location) == false)
+            {
+                MemoryCell temp = new MemoryCell(i_Location, i_CardKey);
+                if (isFoundMatchCellAddBothToMoves(temp) == false)
+                {
+                    m_PlayerAI.Memory.Add(temp);
+                }
+            }
+        }
+
+        //need
+        private void saveToMemory(MattLocation i_Location1, int i_CardKey1, MattLocation i_Location2, int i_CardKey2)
+        {
+            saveMemoryOrAddMove(i_Location1, i_CardKey1);
+            saveMemoryOrAddMove(i_Location2, i_CardKey2);
         }
 
         //need

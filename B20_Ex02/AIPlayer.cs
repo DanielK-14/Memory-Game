@@ -43,24 +43,6 @@ namespace B20_Ex02
             }
         }
 
-        public List<MemoryCell> Moves
-        {
-            get
-            {
-                return m_Moves;
-            }
-        }
-
-        public bool IsNoMove()
-        {
-            bool result = false;
-            if(m_Moves.Count == 0)
-            {
-                result = true;
-            }
-            return result;
-        }
-
         public void AddScore()
         {
             m_Score++;
