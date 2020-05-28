@@ -11,12 +11,15 @@ namespace B20_Ex02
         public void StartMemoryGame()
         {
             string firstPlayerName = getPlayerName();
+            Ex02.ConsoleUtils.Screen.Clear();
             string secondPlayerName = string.Empty;
 
             chooseAndSetOpponent();
+            Ex02.ConsoleUtils.Screen.Clear();
             if (GameLogics.s_Opponent == GameLogics.ePlayer.Player2)
             {
                 secondPlayerName = chooseOpponentName();
+                Ex02.ConsoleUtils.Screen.Clear();
             }
 
             m_Logic = new GameLogics(firstPlayerName, secondPlayerName);
@@ -31,6 +34,7 @@ namespace B20_Ex02
             {
                 getBoardSize(out rows, out columns);
                 m_Logic.SetNewBoard(rows, columns);
+                Ex02.ConsoleUtils.Screen.Clear();
                 gameRunning();
                 printEndGameScreen();
                 askToKeepOnPlaying(out toContinue);
@@ -46,8 +50,8 @@ namespace B20_Ex02
 
         private void gameRunning()
         {
-            MattLocation pick1;
-            MattLocation pick2;
+            MattLocation pick1, pick2;
+
             while (m_Logic.IsGameOver() == false)
             {
                 if (m_Logic.IsPlayerHumanTurn())
@@ -58,9 +62,26 @@ namespace B20_Ex02
                 }
                 else
                 {
-                    m_Logic.GetPicksForAIPlayer(out pick1, out pick2);
+                    m_Logic.GetPickForAIPlayer(out pick1);
+
+                    printBoard();
+                    Console.WriteLine(playerTurnInfo());
+                    System.Threading.Thread.Sleep(2000);
+
+                    m_Logic.SearchForSecondCard(m_Logic.Gameboard.Board[pick1.Row, pick1.Col].Key, pick1, out pick2);
+                    if (pick2 == null)
+                    {
+                        m_Logic.GetPickForAIPlayer(out pick2);
+                    }
+                    else
+                    {
+                        m_Logic.OpenCard(pick2);
+                    }
                 }
+
+                Ex02.ConsoleUtils.Screen.Clear();
                 printBoard();
+                Console.WriteLine(playerTurnInfo());
                 m_Logic.PlayTurn(pick1, pick2);
             }
         }
