@@ -322,12 +322,11 @@ namespace B20_Ex02
                     }
                 }
                 while (foundNewPlace == false);
-                //GenerateRandomPick(out io_Pick1);
+                
                 m_PlayerAI.TryFindSecondCard(m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, out io_Pick2);
                 if (io_Pick2 == null)
                 {
                     GenerateRandomPick(out io_Pick2);
-                    //m_PlayerAI.SaveToMemory(io_Pick1, m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, io_Pick2, m_GameBoard.Board[io_Pick2.Row, io_Pick2.Col].Key);
                 }
             }
             else
