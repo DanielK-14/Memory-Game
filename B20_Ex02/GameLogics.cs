@@ -317,7 +317,7 @@ namespace B20_Ex02
                 if (io_Pick2 == null)
                 {
                     GenerateRandomPick(out io_Pick2);
-                    m_PlayerAI.SaveToMemory(io_Pick1, m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, io_Pick2, m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key);
+                    m_PlayerAI.SaveToMemory(io_Pick1, m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, io_Pick2, m_GameBoard.Board[io_Pick2.Row, io_Pick2.Col].Key);
                 }
             }
             else
@@ -325,6 +325,8 @@ namespace B20_Ex02
                 m_PlayerAI.GetMove(out io_Pick1);
                 m_PlayerAI.GetMove(out io_Pick2);
             }
+            OpenCard(io_Pick1);
+            OpenCard(io_Pick2);
         }
 
         private void GenerateRandomPick(out MattLocation io_Pick)
