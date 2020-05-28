@@ -310,14 +310,24 @@ namespace B20_Ex02
 
         public void GetPicksForAIPlayer(out MattLocation io_Pick1, out MattLocation io_Pick2)
         {
+            bool foundNewPlace = false;
             if (m_PlayerAI.IsNoMove() == true)
             {
-                GenerateRandomPick(out io_Pick1);
+                do
+                {
+                    GenerateRandomPick(out io_Pick1);
+                    if (m_PlayerAI.IsCellInMemory(io_Pick1) == false)
+                    {
+                        foundNewPlace = true;
+                    }
+                }
+                while (foundNewPlace == false);
+                //GenerateRandomPick(out io_Pick1);
                 m_PlayerAI.TryFindSecondCard(m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, out io_Pick2);
                 if (io_Pick2 == null)
                 {
                     GenerateRandomPick(out io_Pick2);
-                    m_PlayerAI.SaveToMemory(io_Pick1, m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, io_Pick2, m_GameBoard.Board[io_Pick2.Row, io_Pick2.Col].Key);
+                    //m_PlayerAI.SaveToMemory(io_Pick1, m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, io_Pick2, m_GameBoard.Board[io_Pick2.Row, io_Pick2.Col].Key);
                 }
             }
             else
