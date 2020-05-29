@@ -4,7 +4,7 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    class GameLogics
+    public class GameLogics
     {
         public static ePlayer s_Opponent;
 
@@ -36,7 +36,91 @@ namespace B20_Ex02
                 m_Player2 = null;
                 s_Opponent = ePlayer.PlayerAI;
             }
+
             m_TurnNumber = 1;
+        }
+
+        public static bool IsPlayerNameValid(string i_Name, out string io_ErrorMsg)
+        {
+            io_ErrorMsg = string.Empty;
+            bool result = true;
+            if (i_Name == string.Empty || i_Name.StartsWith(" ") == true)
+            {
+                result = false;
+                io_ErrorMsg = "- - - - Player name is not valid- - - - \n";
+            }
+
+            return result;
+        }
+
+        public static bool IsNumeric(char input, out string io_ErrorMsg)
+        {
+            io_ErrorMsg = string.Empty;
+            bool result = true;
+            if (char.IsDigit(input) == false)
+            {
+                result = false;
+                io_ErrorMsg = "- - - - Row input not numeric - - - - \n";
+            }
+
+            return result;
+        }
+
+        public static bool IsChoiseValid(string choise, out string io_ErrorMsg)
+        {
+            bool result = true;
+            io_ErrorMsg = string.Empty;
+            if (choise != "2" && choise != "1")
+            {
+                io_ErrorMsg = "- - - - Invalid choise - - - - \n";
+                result = false;
+            }
+
+            return result;
+        }
+
+        public static void SetOpponentType(int type)
+        {
+            s_Opponent = (ePlayer)type;
+        }
+
+        public static bool IsSizeBoardCorrect(string i_Input, out string io_ErrorMsg)
+        {
+            bool result = true;
+            if (i_Input.Length != 1 || i_Input == string.Empty)
+            {
+                result = false;
+                io_ErrorMsg = "- - - - Wrong input - - - - \n";
+            }
+            else if (IsNumeric(i_Input[0], out io_ErrorMsg) == false)
+            {
+                result = false;
+            }
+            else if (int.Parse(i_Input) > 6 || int.Parse(i_Input) < 4)
+            {
+                result = false;
+                io_ErrorMsg = "- - - - Input is not in valid range - - - - \n";
+            }
+
+            return result;
+        }
+
+        public static bool IsBoardSizesValid(int i_Rows, int i_Cols, out string io_ErrorMsg)
+        {
+            bool result = true;
+            io_ErrorMsg = string.Empty;
+            if (i_Rows < 4 || i_Rows > 6 || i_Cols < 4 || i_Cols > 6)
+            {
+                io_ErrorMsg = "- - - - Values not in range - - - -\n";
+                result = false;
+            }
+            else if (((i_Rows * i_Cols) % 2) == 1)
+            {
+                io_ErrorMsg = "- - - - Odd amount of cells - - - -\n";
+                result = false;
+            }
+
+            return result;
         }
 
         public void SetNewBoard(int i_Rows, int i_Cols)
@@ -102,25 +186,6 @@ namespace B20_Ex02
             }
         }
 
-        public static bool IsBoardSizesValid(int i_Rows, int i_Cols, out string io_ErrorMsg)
-        {
-            bool result = true;
-            io_ErrorMsg = string.Empty;
-            if (i_Rows < 4 || i_Rows > 6 || i_Cols < 4 || i_Cols > 6)
-            {
-                io_ErrorMsg = "- - - - Values not in range - - - -\n";
-                result = false;
-            }
-
-            else if(i_Rows * i_Cols % 2 == 1)
-            {
-                io_ErrorMsg = "- - - - Odd amount of cells - - - -\n";
-                result = false;
-            }
-
-            return result;
-        }
-
         public bool IsGameOver()
         {
             return m_GameBoard.CouplesLeft == 0;
@@ -150,56 +215,9 @@ namespace B20_Ex02
             return result;
         }
 
-        public static bool IsPlayerNameValid(string i_Name, out string io_ErrorMsg)
-        {
-            io_ErrorMsg = string.Empty;
-            bool result = true; ;
-            if(i_Name == string.Empty || i_Name.StartsWith(" ") == true)
-            {
-                result = false;
-                io_ErrorMsg = "- - - - Player name is not valid- - - - \n";
-            }
-
-            return result;
-        }
-
         public bool IsPlayerHumanTurn()
         {
-            return (GetPlayerTurn != ePlayer.PlayerAI);
-        }
-
-        public static bool IsNumeric(char input, out string io_ErrorMsg)
-        {
-            io_ErrorMsg = string.Empty;
-            bool result = true;
-            if(char.IsDigit(input) == false)
-            {
-                result = false;
-                io_ErrorMsg = "- - - - Row input not numeric - - - - \n";
-            }
-
-            return result;
-        }
-
-        public static bool IsSizeBoardCorrect(string i_Input, out string io_ErrorMsg)
-        {
-            bool result = true;
-            if (i_Input.Length != 1 || i_Input == string.Empty)
-            {
-                result = false;
-                io_ErrorMsg = "- - - - Wrong input - - - - \n";
-            }
-            else if (IsNumeric(i_Input[0], out io_ErrorMsg) == false)
-            {
-                result = false;
-            }
-            else if(int.Parse(i_Input) > 6 || int.Parse(i_Input) < 4)
-            {
-                result = false;
-                io_ErrorMsg = "- - - - Input is not in valid range - - - - \n";
-            }
-
-            return result;
+            return GetPlayerTurn != ePlayer.PlayerAI;
         }
 
         public bool IsValidColumn(string input, out string io_ErrorMsg)
@@ -210,7 +228,7 @@ namespace B20_Ex02
 
             CheckIfToExitGame(input);
 
-            if (input.Length != 2 || Convert.ToInt32(input[0]) - 65 > m_GameBoard.Cols || Convert.ToInt32(input[0]) - 65 < 0)   //input.Length == string.Empty
+            if (input.Length != 2 || Convert.ToInt32(input[0]) - 65 > m_GameBoard.Cols || Convert.ToInt32(input[0]) - 65 < 0) 
             {
                 result = false;
                 io_ErrorMsg = "- - - - Column does not exsit - - - - \n";
@@ -263,24 +281,6 @@ namespace B20_Ex02
             return result;
         }
 
-        public static bool IsChoiseValid(string choise, out string io_ErrorMsg)
-        {
-            bool result = true;
-            io_ErrorMsg = string.Empty;
-            if (choise != "2" && choise != "1")
-            {
-                io_ErrorMsg = "- - - - Invalid choise - - - - \n";
-                result = false;
-            }
-
-            return result;
-        }
-
-        public static void SetOpponentType(int type)
-        {
-            s_Opponent = (ePlayer)type;
-        }
-
         public void OpenCard(MattLocation i_Location)
         {
             m_GameBoard.Board[i_Location.Row, i_Location.Col].Show();
@@ -310,8 +310,9 @@ namespace B20_Ex02
                 if(s_Opponent == ePlayer.PlayerAI)
                 {
                     System.Threading.Thread.Sleep(2000);
-                    deleteFromMemoryAndMovesOfPlayerAI(i_Pick1, i_Pick2);   //Delete from AI Memory if exsits.
+                    deleteFromMemoryAndMovesOfPlayerAI(i_Pick1, i_Pick2);
                 }
+
                 m_GameBoard.CouplesLeft--;
                 addScore(GetPlayerTurn);
             }
@@ -392,6 +393,7 @@ namespace B20_Ex02
                     break;
                 }
             }
+
             return result;
         }
 
@@ -449,7 +451,8 @@ namespace B20_Ex02
                 {
                     stop = true;
                 }
-            } while (stop == false);
+            } 
+            while (stop == false);
 
             io_Pick = possibleMoves[randomIndexInPossibleMoves];
         }

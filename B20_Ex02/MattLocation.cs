@@ -1,6 +1,6 @@
 ﻿namespace B20_Ex02
 {
-    class MattLocation
+    public class MattLocation
     {
         private int m_Row;
         private int m_Col;
@@ -17,6 +17,7 @@
             {
                 return m_Row;
             }
+
             set
             {
                 m_Row = value;
@@ -29,6 +30,7 @@
             {
                 return m_Col;
             }
+
             set
             {
                 m_Col = value;
@@ -37,12 +39,12 @@
 
         public static bool operator ==(MattLocation cell1, MattLocation cell2)
         {
-            return (cell1.Row == cell2.Row && cell1.Col == cell2.Col);
+            return cell1.Row == cell2.Row && cell1.Col == cell2.Col;
         }
 
         public static bool operator !=(MattLocation cell1, MattLocation cell2)
         {
-            return (cell1.Row != cell2.Row && cell1.Col != cell2.Col);
+            return cell1.Row != cell2.Row && cell1.Col != cell2.Col;
         }
     }
 }

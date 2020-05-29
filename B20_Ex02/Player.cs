@@ -1,6 +1,6 @@
 ﻿namespace B20_Ex02
 {
-    class Player
+    public class Player
     {
         private string m_Name;
         private int m_Score;
@@ -17,6 +17,7 @@
             {
                 return m_Name;
             }
+
             set
             {
                 if(m_Name.Equals(value) == false)
@@ -32,6 +33,7 @@
             {
                 return m_Score;
             }
+
             set
             {
                 m_Score = value;

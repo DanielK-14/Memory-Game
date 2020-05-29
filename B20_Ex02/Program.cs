@@ -4,13 +4,12 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    class Program
+    public class Program
     {
-        static void Main()
+        public static void Main()
         {
             UI ui = new UI();
             ui.StartMemoryGame();
-
         }
     }
 }

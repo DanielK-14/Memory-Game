@@ -4,7 +4,7 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    class UI
+    public class UI
     {
         private GameLogics m_Logic;
 
@@ -42,6 +42,7 @@ namespace B20_Ex02
                 {
                     m_Logic.ResetGame();
                 }
+
                 Ex02.ConsoleUtils.Screen.Clear();
             }
             while (toContinue == true);
@@ -291,7 +292,7 @@ The results are:";
         private string buildWinnerFormat()
         {
             string winnerFormat;
-            string opponentName = String.Empty;
+            string opponentName = string.Empty;
             int opponentScore = 0;
 
             switch (m_Logic.Opponent)
@@ -309,11 +310,11 @@ The results are:";
 
             if (m_Logic.FirstPlayer.Score > opponentScore)
             {
-                winnerFormat = String.Format("{0} has won the game! Congratulations!", m_Logic.FirstPlayer.Name);
+                winnerFormat = string.Format("{0} has won the game! Congratulations!", m_Logic.FirstPlayer.Name);
             }
             else if (m_Logic.FirstPlayer.Score < opponentScore)
             {
-                winnerFormat = String.Format("{0} has won the game! Congratulations!", opponentName);
+                winnerFormat = string.Format("{0} has won the game! Congratulations!", opponentName);
             }
             else
             {
@@ -382,6 +383,7 @@ The results are:";
             {
                 stringBuilder.Append(i_SeprateCharacter, 4);
             }
+
             stringBuilder.Append(i_SeprateCharacter);
 
             return stringBuilder;

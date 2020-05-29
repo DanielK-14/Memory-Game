@@ -4,7 +4,7 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    class MemoryCell
+    public class MemoryCell
     {
         private MattLocation m_Location;
         private int m_CardKey;

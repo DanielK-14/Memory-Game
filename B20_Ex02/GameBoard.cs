@@ -4,7 +4,7 @@ using System.Text;
 
 namespace B20_Ex02
 {
-    class GameBoard
+    public class GameBoard
     {
         private int m_Rows;
         private int m_Cols;
@@ -48,6 +48,7 @@ namespace B20_Ex02
             {
                 return m_CouplesLeft;
             }
+
             set
             {
                 m_CouplesLeft = value;
@@ -60,6 +61,7 @@ namespace B20_Ex02
             {
                 return m_Board;
             }
+
             set
             {
                 m_Board = value;
@@ -86,7 +88,7 @@ namespace B20_Ex02
         {
             Random random = new Random();
             List<MattLocation> emptyPlaces = new List<MattLocation>();
-            for (int row = 0; row < m_Rows; row++)  //Putting all empty places into emptyPlaces array.
+            for (int row = 0; row < m_Rows; row++)
             {
                 for (int col = 0; col < m_Cols; col++)
                 {
@@ -97,11 +99,11 @@ namespace B20_Ex02
             int key = 1;
             foreach(var card in i_CardsData)
             {
-                for (int i = 1; i <= 2; i++)    //Doing shuffle location two times on each card.
+                for (int i = 1; i <= 2; i++)  
                 {
-                    int randomEmptyIndex = random.Next(emptyPlaces.Count);  //Getting random index for empty place.
-                    MattLocation location = emptyPlaces[randomEmptyIndex];  //Getting the empty random location.
-                    emptyPlaces.RemoveAt(randomEmptyIndex);                 //Removing the empty place that was chosen already.
+                    int randomEmptyIndex = random.Next(emptyPlaces.Count);  
+                    MattLocation location = emptyPlaces[randomEmptyIndex];  
+                    emptyPlaces.RemoveAt(randomEmptyIndex);                
                     m_Board[location.Row, location.Col] = new BoardCell<char>(card, location, key);
                 }
 
