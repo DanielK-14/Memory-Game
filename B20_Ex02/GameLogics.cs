@@ -18,7 +18,7 @@ namespace B20_Ex02
         {
             Player1,
             Player2,
-            PlayerAI
+            PlayerAI,
         }
 
         public GameLogics(string i_Player1Name, string i_Player2Name)
@@ -53,11 +53,11 @@ namespace B20_Ex02
             return result;
         }
 
-        public static bool IsNumeric(char input, out string io_ErrorMsg)
+        public static bool IsNumeric(char i_Input, out string io_ErrorMsg)
         {
             io_ErrorMsg = string.Empty;
             bool result = true;
-            if (char.IsDigit(input) == false)
+            if (char.IsDigit(i_Input) == false)
             {
                 result = false;
                 io_ErrorMsg = "- - - - Row input not numeric - - - - \n";
@@ -66,11 +66,11 @@ namespace B20_Ex02
             return result;
         }
 
-        public static bool IsChoiseValid(string choise, out string io_ErrorMsg)
+        public static bool IsChoiseValid(string i_Choise, out string io_ErrorMsg)
         {
             bool result = true;
             io_ErrorMsg = string.Empty;
-            if (choise != "2" && choise != "1")
+            if (i_Choise != "2" && i_Choise != "1")
             {
                 io_ErrorMsg = "- - - - Invalid choise - - - - \n";
                 result = false;
@@ -79,9 +79,9 @@ namespace B20_Ex02
             return result;
         }
 
-        public static void SetOpponentType(int type)
+        public static void SetOpponentType(int i_Type)
         {
-            s_Opponent = (ePlayer)type;
+            s_Opponent = (ePlayer)i_Type;
         }
 
         public static bool IsSizeBoardCorrect(string i_Input, out string io_ErrorMsg)
@@ -191,7 +191,7 @@ namespace B20_Ex02
             return m_GameBoard.CouplesLeft == 0;
         }
 
-        public bool IsPairFound(MattLocation i_Location1, MattLocation i_Location2)
+        private bool isPairFound(MattLocation i_Location1, MattLocation i_Location2)
         {
             bool result = false;
             if (m_GameBoard.Board[i_Location1.Row, i_Location1.Col] == m_GameBoard.Board[i_Location2.Row, i_Location2.Col])
@@ -220,15 +220,15 @@ namespace B20_Ex02
             return GetPlayerTurn != ePlayer.PlayerAI;
         }
 
-        public bool IsValidColumn(string input, out string io_ErrorMsg)
+        public bool IsValidColumn(string i_Input, out string io_ErrorMsg)
         {
             io_ErrorMsg = string.Empty;
             bool result = true;
-            input = input.ToUpper();
+            i_Input = i_Input.ToUpper();
 
-            CheckIfToExitGame(input);
+            checkIfToExitGame(i_Input);
 
-            if (input.Length != 2 || Convert.ToInt32(input[0]) - 65 > m_GameBoard.Cols || Convert.ToInt32(input[0]) - 65 < 0) 
+            if (i_Input.Length != 2 || Convert.ToInt32(i_Input[0]) - 65 > m_GameBoard.Cols || Convert.ToInt32(i_Input[0]) - 65 < 0) 
             {
                 result = false;
                 io_ErrorMsg = "- - - - Column does not exsit - - - - \n";
@@ -237,19 +237,19 @@ namespace B20_Ex02
             return result;
         }
 
-        public bool IsValidRow(string input, out string io_ErrorMsg)
+        public bool IsValidRow(string i_Input, out string io_ErrorMsg)
         {
             io_ErrorMsg = string.Empty;
             bool result = true;
 
-            CheckIfToExitGame(input);
+            checkIfToExitGame(i_Input);
 
-            if (IsNumeric(input[1], out io_ErrorMsg) == false)
+            if (IsNumeric(i_Input[1], out io_ErrorMsg) == false)
             {
                 result = false;
                 io_ErrorMsg = "- - - - Input not numeric - - - - \n";
             }
-            else if(Convert.ToInt32(input[1] - '0') > m_GameBoard.Rows || Convert.ToInt32(input[1] - '0') - 1 < 0)
+            else if(Convert.ToInt32(i_Input[1] - '0') > m_GameBoard.Rows || Convert.ToInt32(i_Input[1] - '0') - 1 < 0)
             {
                 result = false;
                 io_ErrorMsg = "- - - - Row does not exsit - - - - \n";
@@ -258,11 +258,11 @@ namespace B20_Ex02
             return result;
         }
 
-        public bool CheckIfContinue(string input, out string io_ErrorMsg)
+        public bool CheckIfContinue(string i_Input, out string io_ErrorMsg)
         {
             io_ErrorMsg = string.Empty;
             bool result;
-            switch(input.ToLower())
+            switch(i_Input.ToLower())
             {
                 case "yes":
                     result = true;
@@ -299,7 +299,7 @@ namespace B20_Ex02
 
         public void PlayTurn(MattLocation i_Pick1, MattLocation i_Pick2)
         {
-            if (IsPairFound(i_Pick1, i_Pick2) == false)
+            if (isPairFound(i_Pick1, i_Pick2) == false)
             {
                 System.Threading.Thread.Sleep(2000);
                 closeCards(i_Pick1, i_Pick2);
@@ -488,10 +488,10 @@ namespace B20_Ex02
             }
         }
 
-        public void CheckIfToExitGame(string input)
+        private void checkIfToExitGame(string i_Input)
         {
-            input = input.ToLower();
-            if(input == "q" || input == "quit")
+            i_Input = i_Input.ToLower();
+            if(i_Input == "q" || i_Input == "quit")
             {
                 ExitGame();
             }

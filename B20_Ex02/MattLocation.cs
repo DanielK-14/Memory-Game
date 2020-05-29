@@ -37,14 +37,14 @@
             }
         }
 
-        public static bool operator ==(MattLocation cell1, MattLocation cell2)
+        public static bool operator ==(MattLocation i_Cell1, MattLocation i_Cell2)
         {
-            return cell1.Row == cell2.Row && cell1.Col == cell2.Col;
+            return i_Cell1.Row == i_Cell2.Row && i_Cell1.Col == i_Cell2.Col;
         }
 
-        public static bool operator !=(MattLocation cell1, MattLocation cell2)
+        public static bool operator !=(MattLocation i_Cell1, MattLocation i_Cell2)
         {
-            return cell1.Row != cell2.Row && cell1.Col != cell2.Col;
+            return i_Cell1.Row != i_Cell2.Row && i_Cell1.Col != i_Cell2.Col;
         }
     }
 }
