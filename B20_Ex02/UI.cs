@@ -64,24 +64,24 @@ namespace B20_Ex02
                 else
                 {
                     m_Logic.GetPicksForPlayerAI(out pick1, out pick2);
-                    printCurrentSituation(pick1, pick2);
+                    printCurrentSituation(pick1);
                     System.Threading.Thread.Sleep(3000);
                     m_Logic.OpenCard(pick2);
                 }
 
-                printCurrentSituation(pick1, pick2);
+                printCurrentSituation(pick2);
                 m_Logic.PlayTurn(pick1, pick2);
             }
         }
 
-        private void printCurrentSituation(MattLocation i_Pick1, MattLocation i_Pick2)
+        private void printCurrentSituation(MattLocation i_Pick)
         {
             Ex02.ConsoleUtils.Screen.Clear();
             printBoard();
             Console.WriteLine(playerTurnInfo());
             if (m_Logic.GetPlayerTurn == GameLogics.ePlayer.PlayerAI)
             {
-                Console.WriteLine("Player AI picked :{0}{1}", Convert.ToChar(i_Pick1.Col + 65), i_Pick2.Row + 1);
+                Console.WriteLine("\nPlayer AI picked : {0}{1}", Convert.ToChar(i_Pick.Col + 65), i_Pick.Row + 1);
             }
         }
 
