@@ -43,6 +43,24 @@ namespace B20_Ex02
             }
         }
 
+        public List<MemoryCell> Moves
+        {
+            get
+            {
+                return m_Moves;
+            }
+        }
+
+        public bool IsNoMove()
+        {
+            bool result = false;
+            if(m_Moves.Count == 0)
+            {
+                result = true;
+            }
+            return result;
+        }
+
         public void AddScore()
         {
             m_Score++;
@@ -98,62 +116,13 @@ namespace B20_Ex02
             {
                 m_Memory.Clear();
             }
+
             if(m_Moves != default && m_Moves.Count != 0)
             {
                 m_Moves.Clear();
             }
+
+            m_Score = 0;
         }
-
-        //public void SetMemory(int i_Rows, int i_Columns)
-        //{
-        //    m_Memory = new List<BoardCell>(i_Rows * i_Columns);
-        //    foreach(int i in m_Memory)
-        //    {
-        //        m_Memory[i] = null;
-        //    }
-        //    m_MemorySize = i_Rows * i_Columns;
-        //}
-
-
-        //public void AddToAIMemory(BoardCell i_Cell, int i_MaxRows, int i_Cols)
-        //{
-        //    int row = i_Cell.Location.Row;
-        //    int column = i_Cell.Location.Col
-        //    m_Memory[(row * i_MaxRows) + column] = i_Cell;
-        //}
-
-        //public int NextEmptyPlace()
-        //{
-        //    int i = 0;            
-        //    while(m_Memory[i] != null)
-        //    {
-        //        i++;
-        //    }
-        //    return i;
-        //}
-
-        //public int GetPair(int i_Key)
-        //{
-        //    bool first = false;
-        //    int result;
-
-        //    for(int i = 0; i < m_MemorySize; i++)
-        //    {
-        //        if(first == false && m_Memory[i] == null)
-        //        {
-        //            result = i;
-        //            first == true;
-        //        }
-        //        if(m_Memory[i].Key == i_Key)
-        //        {
-        //            return i;
-        //        }
-        //    }
-        //}
-
-        //public void MakeVisible(int i_Rows, int i_Cols, int i_MaxRows)
-        //{
-        //    m_Memory[(i_Rows * i_MaxRows) + i_Cols].Show();
-        //}
     }
 }

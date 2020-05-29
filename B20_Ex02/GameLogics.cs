@@ -94,15 +94,6 @@ namespace B20_Ex02
             }
         }
 
-        public void CheckSecondMove(out MattLocation pick2)
-        {
-            pick2 = null;
-            if(m_PlayerAI.IsNoMove() == false)
-            {
-                m_PlayerAI.GetMove(out pick2);
-            }
-        }
-
         public ePlayer Opponent
         {
             get
@@ -159,6 +150,19 @@ namespace B20_Ex02
             return result;
         }
 
+        public static bool IsPlayerNameValid(string i_Name, out string io_ErrorMsg)
+        {
+            io_ErrorMsg = string.Empty;
+            bool result = true; ;
+            if(i_Name == string.Empty || i_Name.StartsWith(" ") == true)
+            {
+                result = false;
+                io_ErrorMsg = "- - - - Player name is not valid- - - - \n";
+            }
+
+            return result;
+        }
+
         public bool IsPlayerHumanTurn()
         {
             return (GetPlayerTurn != ePlayer.PlayerAI);
@@ -177,21 +181,19 @@ namespace B20_Ex02
             return result;
         }
 
-        public static bool IsSizeBoardCorrect(string input, out string io_ErrorMsg)
+        public static bool IsSizeBoardCorrect(string i_Input, out string io_ErrorMsg)
         {
             bool result = true;
-            if(input.Length != 1)
+            if (i_Input.Length != 1 || i_Input == string.Empty)
             {
                 result = false;
                 io_ErrorMsg = "- - - - Wrong input - - - - \n";
             }
-
-            if(IsNumeric(input[0], out io_ErrorMsg) == false)
+            else if (IsNumeric(i_Input[0], out io_ErrorMsg) == false)
             {
                 result = false;
             }
-
-            if(int.Parse(input) > 6 || int.Parse(input) < 4)
+            else if(int.Parse(i_Input) > 6 || int.Parse(i_Input) < 4)
             {
                 result = false;
                 io_ErrorMsg = "- - - - Input is not in valid range - - - - \n";
@@ -236,12 +238,6 @@ namespace B20_Ex02
             }
 
             return result;
-        }
-
-        public int ConvertCharToIntLocation(string i_Character)
-        {
-            i_Character = i_Character.ToUpper();
-            return (int.Parse(i_Character) - 65);
         }
 
         public bool CheckIfContinue(string input, out string io_ErrorMsg)
@@ -306,7 +302,6 @@ namespace B20_Ex02
             if (IsPairFound(i_Pick1, i_Pick2) == false)
             {
                 System.Threading.Thread.Sleep(2000);
-                Ex02.ConsoleUtils.Screen.Clear();
                 closeCards(i_Pick1, i_Pick2);
                 m_TurnNumber++;
             }
@@ -322,105 +317,117 @@ namespace B20_Ex02
             }
         }
 
-        //need
         private void deleteFromMemoryAndMovesOfPlayerAI(MattLocation i_Pick1, MattLocation i_Pick2)
         {
             if (m_PlayerAI.IsCellInMemory(i_Pick1) == true)
             {
-                m_PlayerAI.Memory.Remove(new MemoryCell(i_Pick1, m_GameBoard.Board[i_Pick1.Row, i_Pick1.Col].Key));
+                removeFromPlayerAIList(i_Pick1, m_PlayerAI.Memory);
             }
 
             if (m_PlayerAI.IsCellInMemory(i_Pick2) == true)
             {
-                m_PlayerAI.Memory.Remove(new MemoryCell(i_Pick2, m_GameBoard.Board[i_Pick2.Row, i_Pick2.Col].Key));
+                removeFromPlayerAIList(i_Pick2, m_PlayerAI.Memory);
             }
 
             if(m_PlayerAI.IsCellInMoves(i_Pick1) == true)
             {
-                m_PlayerAI.Moves.Remove(new MemoryCell(i_Pick1, m_GameBoard.Board[i_Pick1.Row, i_Pick1.Col].Key));
+                removeFromPlayerAIList(i_Pick1, m_PlayerAI.Moves);
             }
 
             if (m_PlayerAI.IsCellInMoves(i_Pick2) == true)
             {
-                m_PlayerAI.Moves.Remove(new MemoryCell(i_Pick2, m_GameBoard.Board[i_Pick2.Row, i_Pick2.Col].Key));
+                removeFromPlayerAIList(i_Pick2, m_PlayerAI.Moves);
             }
         }
 
-        //need
         private void saveMemoryOrAddMove(MattLocation i_Location, int i_CardKey)
         {
+            MemoryCell matchMemoryCell;
             if (m_PlayerAI.IsCellInMemory(i_Location) == false)
             {
                 MemoryCell temp = new MemoryCell(i_Location, i_CardKey);
-                if (isFoundMatchCellAddBothToMoves(temp) == false)
+                if (isFoundMatchCell(temp.CardKey, out matchMemoryCell) == false)
                 {
                     m_PlayerAI.Memory.Add(temp);
+                }
+                else
+                {
+                    m_PlayerAI.Moves.Add(temp);
+                    m_PlayerAI.Moves.Add(matchMemoryCell);
+                    m_PlayerAI.Memory.Remove(matchMemoryCell);
                 }
             }
         }
 
-        //need
         private void saveToMemory(MattLocation i_Location1, int i_CardKey1, MattLocation i_Location2, int i_CardKey2)
         {
             saveMemoryOrAddMove(i_Location1, i_CardKey1);
             saveMemoryOrAddMove(i_Location2, i_CardKey2);
         }
 
-        //need
-        private bool isFoundMatchCellAddBothToMoves(MemoryCell i_Cell)
+        private void removeFromPlayerAIList(MattLocation i_Location, List<MemoryCell> i_List)
+        {
+            int cardKey = m_GameBoard.Board[i_Location.Row, i_Location.Col].Key;
+            foreach(var memoryCell in i_List)
+            {
+                if(memoryCell.Location == i_Location && memoryCell.CardKey == cardKey)
+                {
+                    i_List.Remove(memoryCell);
+                    break;
+                }
+            }
+        }
+
+        private bool isFoundMatchCell(int i_FirstCellCardKey, out MemoryCell i_MatchMemoryCell)
         {
             bool result = false;
+            i_MatchMemoryCell = null;
+
             foreach (var cellMemory in m_PlayerAI.Memory)
             {
-                if (cellMemory.CardKey == i_Cell.CardKey)
+                if (cellMemory.CardKey == i_FirstCellCardKey)
                 {
-                    m_PlayerAI.Moves.Add(i_Cell);
-                    m_PlayerAI.Moves.Add(cellMemory);
-                    m_PlayerAI.Memory.Remove(cellMemory);
                     result = true;
+                    i_MatchMemoryCell = cellMemory;
                     break;
                 }
             }
             return result;
         }
 
-        //need
-        public void GetPickForAIPlayer(out MattLocation io_Pick)
+        public void GetPicksForPlayerAI(out MattLocation io_Pick1, out MattLocation io_Pick2)
         {
+            MemoryCell matchMemoryCell;
+
             if (m_PlayerAI.IsNoMove() == false)
             {
-                m_PlayerAI.GetMove(out io_Pick);
+                m_PlayerAI.GetMove(out io_Pick1);
+                OpenCard(io_Pick1);
+                m_PlayerAI.GetMove(out io_Pick2);
             }
             else
             {
-                generateRandomPick(out io_Pick);
-            }
-
-            OpenCard(io_Pick);
-        }
-
-        //need
-        public void SearchForSecondCard(int i_CardKey, MattLocation io_Pick, out MattLocation io_Pick2)
-        {
-            io_Pick2 = null;
-            foreach (var cellMemory in m_PlayerAI.Memory)
-            {
-                if (cellMemory.CardKey == i_CardKey && cellMemory.Location != io_Pick)
+                generateRandomPick(out io_Pick1);
+                OpenCard(io_Pick1);
+                int firstPickCardKey = m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key;
+                if (isFoundMatchCell(firstPickCardKey, out matchMemoryCell) == false)
                 {
-                    io_Pick2 = cellMemory.Location;
-                    m_PlayerAI.Memory.Remove(cellMemory);
-                    break;
+                    m_PlayerAI.Memory.Add(new MemoryCell(io_Pick1, firstPickCardKey));
+                    generateRandomPick(out io_Pick2);
+                }
+                else
+                {
+                    io_Pick2 = matchMemoryCell.Location;
                 }
             }
         }
 
-        //need
         private void generateRandomPick(out MattLocation io_Pick)
         {
             int randomIndexInPossibleMoves;
             List<MattLocation> possibleMoves = new List<MattLocation>();
             Random random = new Random();
-            bool stop = true;
+            bool stop;
 
             foreach (var cell in m_GameBoard.Board)
             {
@@ -437,6 +444,10 @@ namespace B20_Ex02
                 {
                     possibleMoves.RemoveAt(randomIndexInPossibleMoves);
                     stop = false;
+                }
+                else
+                {
+                    stop = true;
                 }
             } while (stop == false);
 

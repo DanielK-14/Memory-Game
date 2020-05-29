@@ -42,6 +42,7 @@ namespace B20_Ex02
                 {
                     m_Logic.ResetGame();
                 }
+                Ex02.ConsoleUtils.Screen.Clear();
             }
             while (toContinue == true);
 
@@ -54,35 +55,33 @@ namespace B20_Ex02
 
             while (m_Logic.IsGameOver() == false)
             {
+                Ex02.ConsoleUtils.Screen.Clear();
                 if (m_Logic.IsPlayerHumanTurn())
                 {
-                    Ex02.ConsoleUtils.Screen.Clear();
                     pick1 = pickCard();
                     pick2 = pickCard();
                 }
                 else
                 {
-                    m_Logic.GetPickForAIPlayer(out pick1);
-
-                    printBoard();
-                    Console.WriteLine(playerTurnInfo());
-                    System.Threading.Thread.Sleep(2000);
-
-                    m_Logic.SearchForSecondCard(m_Logic.Gameboard.Board[pick1.Row, pick1.Col].Key, pick1, out pick2);
-                    if (pick2 == null)
-                    {
-                        m_Logic.GetPickForAIPlayer(out pick2);
-                    }
-                    else
-                    {
-                        m_Logic.OpenCard(pick2);
-                    }
+                    m_Logic.GetPicksForPlayerAI(out pick1, out pick2);
+                    printCurrentSituation(pick1, pick2);
+                    System.Threading.Thread.Sleep(3000);
+                    m_Logic.OpenCard(pick2);
                 }
 
-                Ex02.ConsoleUtils.Screen.Clear();
-                printBoard();
-                Console.WriteLine(playerTurnInfo());
+                printCurrentSituation(pick1, pick2);
                 m_Logic.PlayTurn(pick1, pick2);
+            }
+        }
+
+        private void printCurrentSituation(MattLocation i_Pick1, MattLocation i_Pick2)
+        {
+            Ex02.ConsoleUtils.Screen.Clear();
+            printBoard();
+            Console.WriteLine(playerTurnInfo());
+            if (m_Logic.GetPlayerTurn == GameLogics.ePlayer.PlayerAI)
+            {
+                Console.WriteLine("Player AI picked :{0}{1}", Convert.ToChar(i_Pick1.Col + 65), i_Pick2.Row + 1);
             }
         }
 
@@ -105,8 +104,23 @@ namespace B20_Ex02
 
         private string getPlayerName()
         {
-            Console.WriteLine("Please enter first player name: ");
-            string name = Console.ReadLine();
+            string errorMsg;
+            bool result;
+            string name;
+
+            do
+            {
+                Console.WriteLine("Please enter first player name: ");
+                name = Console.ReadLine();
+                result = GameLogics.IsPlayerNameValid(name, out errorMsg);
+                if (result == false)
+                {
+                    Ex02.ConsoleUtils.Screen.Clear();
+                    Console.WriteLine(errorMsg);
+                }
+            }
+            while (result == false);
+
             return name;
         }
 
@@ -122,12 +136,18 @@ namespace B20_Ex02
                 result = GameLogics.IsChoiseValid(choiseString, out errorMsg);
                 if (result == false)
                 {
-                    Console.WriteLine(errorMsg);
+                    printErrorMsg(errorMsg);
                 }
             }
             while (result == false);
 
             GameLogics.SetOpponentType(int.Parse(choiseString));
+        }
+
+        private void printErrorMsg(string i_ErrorMsg)
+        {
+            Ex02.ConsoleUtils.Screen.Clear();
+            Console.WriteLine(i_ErrorMsg);
         }
 
         private string chooseOpponentName()
@@ -165,8 +185,7 @@ namespace B20_Ex02
 
                 if (result == false)
                 {
-                    Ex02.ConsoleUtils.Screen.Clear();
-                    Console.WriteLine(errorMsg);
+                    printErrorMsg(errorMsg);
                 }
             }
             while (result == false);
@@ -251,7 +270,7 @@ namespace B20_Ex02
 The results are:";
             string body = string.Format("First player  {0}  scored: {1}\n", m_Logic.FirstPlayer.Name, m_Logic.FirstPlayer.Score);
 
-            if (GameLogics.s_Opponent == GameLogics.ePlayer.Player2)
+            if (m_Logic.Opponent == GameLogics.ePlayer.Player2)
             {
                 opponentBody = string.Format("Second player  {0}  scored: {1}", m_Logic.SecondPlayer.Name, m_Logic.SecondPlayer.Score);
             }
@@ -275,7 +294,7 @@ The results are:";
             string opponentName = String.Empty;
             int opponentScore = 0;
 
-            switch (GameLogics.s_Opponent)
+            switch (m_Logic.Opponent)
             {
                 case GameLogics.ePlayer.Player2:
                     opponentName = m_Logic.SecondPlayer.Name;
