@@ -150,6 +150,19 @@ namespace B20_Ex02
             return result;
         }
 
+        public static bool IsPlayerNameValid(string i_Name, out string io_ErrorMsg)
+        {
+            io_ErrorMsg = string.Empty;
+            bool result = true; ;
+            if(i_Name == string.Empty || i_Name.StartsWith(" ") == true)
+            {
+                result = false;
+                io_ErrorMsg = "- - - - Player name is not valid- - - - \n";
+            }
+
+            return result;
+        }
+
         public bool IsPlayerHumanTurn()
         {
             return (GetPlayerTurn != ePlayer.PlayerAI);
@@ -168,21 +181,19 @@ namespace B20_Ex02
             return result;
         }
 
-        public static bool IsSizeBoardCorrect(string input, out string io_ErrorMsg)
+        public static bool IsSizeBoardCorrect(string i_Input, out string io_ErrorMsg)
         {
             bool result = true;
-            if(input.Length != 1)
+            if (i_Input.Length != 1 || i_Input == string.Empty)
             {
                 result = false;
                 io_ErrorMsg = "- - - - Wrong input - - - - \n";
             }
-
-            if(IsNumeric(input[0], out io_ErrorMsg) == false)
+            else if (IsNumeric(i_Input[0], out io_ErrorMsg) == false)
             {
                 result = false;
             }
-
-            if(int.Parse(input) > 6 || int.Parse(input) < 4)
+            else if(int.Parse(i_Input) > 6 || int.Parse(i_Input) < 4)
             {
                 result = false;
                 io_ErrorMsg = "- - - - Input is not in valid range - - - - \n";
@@ -227,12 +238,6 @@ namespace B20_Ex02
             }
 
             return result;
-        }
-
-        public int ConvertCharToIntLocation(string i_Character)
-        {
-            i_Character = i_Character.ToUpper();
-            return (int.Parse(i_Character) - 65);
         }
 
         public bool CheckIfContinue(string input, out string io_ErrorMsg)
@@ -282,13 +287,13 @@ namespace B20_Ex02
             Ex02.ConsoleUtils.Screen.Clear();
         }
 
-        public void closeCards(MattLocation i_Location1, MattLocation i_Location2)
+        private void closeCards(MattLocation i_Location1, MattLocation i_Location2)
         {
             m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Hide();
             m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Hide();
             if (s_Opponent == ePlayer.PlayerAI)
             {
-                m_PlayerAI.SaveToMemory(i_Location1, m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Key, i_Location2, m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Key);
+                saveToMemory(i_Location1, m_GameBoard.Board[i_Location1.Row, i_Location1.Col].Key, i_Location2, m_GameBoard.Board[i_Location2.Row, i_Location2.Col].Key);
             }
         }
 
@@ -297,56 +302,159 @@ namespace B20_Ex02
             if (IsPairFound(i_Pick1, i_Pick2) == false)
             {
                 System.Threading.Thread.Sleep(2000);
-                Ex02.ConsoleUtils.Screen.Clear();
                 closeCards(i_Pick1, i_Pick2);
                 m_TurnNumber++;
             }
             else
             {
+                if(s_Opponent == ePlayer.PlayerAI)
+                {
+                    System.Threading.Thread.Sleep(2000);
+                    deleteFromMemoryAndMovesOfPlayerAI(i_Pick1, i_Pick2);   //Delete from AI Memory if exsits.
+                }
                 m_GameBoard.CouplesLeft--;
-                AddScore(GetPlayerTurn);
+                addScore(GetPlayerTurn);
             }
         }
 
-        public void GetPicksForAIPlayer(out MattLocation io_Pick1, out MattLocation io_Pick2)
+        private void deleteFromMemoryAndMovesOfPlayerAI(MattLocation i_Pick1, MattLocation i_Pick2)
         {
-            if (m_PlayerAI.IsNoMove() == true)
+            if (m_PlayerAI.IsCellInMemory(i_Pick1) == true)
             {
-                    GenerateRandomPick(out io_Pick1);
-                if(m_PlayerAI.TryFindSecondCard(m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, out io_Pick2) == false)
+                removeFromPlayerAIList(i_Pick1, m_PlayerAI.Memory);
+            }
+
+            if (m_PlayerAI.IsCellInMemory(i_Pick2) == true)
+            {
+                removeFromPlayerAIList(i_Pick2, m_PlayerAI.Memory);
+            }
+
+            if(m_PlayerAI.IsCellInMoves(i_Pick1) == true)
+            {
+                removeFromPlayerAIList(i_Pick1, m_PlayerAI.Moves);
+            }
+
+            if (m_PlayerAI.IsCellInMoves(i_Pick2) == true)
+            {
+                removeFromPlayerAIList(i_Pick2, m_PlayerAI.Moves);
+            }
+        }
+
+        private void saveMemoryOrAddMove(MattLocation i_Location, int i_CardKey)
+        {
+            MemoryCell matchMemoryCell;
+            if (m_PlayerAI.IsCellInMemory(i_Location) == false)
+            {
+                MemoryCell temp = new MemoryCell(i_Location, i_CardKey);
+                if (isFoundMatchCell(temp.CardKey, out matchMemoryCell) == false)
                 {
-                        GenerateRandomPick(out io_Pick2);
+                    m_PlayerAI.Memory.Add(temp);
                 }
+                else
+                {
+                    m_PlayerAI.Moves.Add(temp);
+                    m_PlayerAI.Moves.Add(matchMemoryCell);
+                    m_PlayerAI.Memory.Remove(matchMemoryCell);
+                }
+            }
+        }
+
+        private void saveToMemory(MattLocation i_Location1, int i_CardKey1, MattLocation i_Location2, int i_CardKey2)
+        {
+            saveMemoryOrAddMove(i_Location1, i_CardKey1);
+            saveMemoryOrAddMove(i_Location2, i_CardKey2);
+        }
+
+        private void removeFromPlayerAIList(MattLocation i_Location, List<MemoryCell> i_List)
+        {
+            int cardKey = m_GameBoard.Board[i_Location.Row, i_Location.Col].Key;
+            foreach(var memoryCell in i_List)
+            {
+                if(memoryCell.Location == i_Location && memoryCell.CardKey == cardKey)
+                {
+                    i_List.Remove(memoryCell);
+                    break;
+                }
+            }
+        }
+
+        private bool isFoundMatchCell(int i_FirstCellCardKey, out MemoryCell i_MatchMemoryCell)
+        {
+            bool result = false;
+            i_MatchMemoryCell = null;
+
+            foreach (var cellMemory in m_PlayerAI.Memory)
+            {
+                if (cellMemory.CardKey == i_FirstCellCardKey)
+                {
+                    result = true;
+                    i_MatchMemoryCell = cellMemory;
+                    break;
+                }
+            }
+            return result;
+        }
+
+        public void GetPicksForPlayerAI(out MattLocation io_Pick1, out MattLocation io_Pick2)
+        {
+            MemoryCell matchMemoryCell;
+
+            if (m_PlayerAI.IsNoMove() == false)
+            {
+                m_PlayerAI.GetMove(out io_Pick1);
+                OpenCard(io_Pick1);
+                m_PlayerAI.GetMove(out io_Pick2);
             }
             else
             {
-                m_PlayerAI.GetMove(out io_Pick1);
-                m_PlayerAI.GetMove(out io_Pick2);
+                generateRandomPick(out io_Pick1);
+                OpenCard(io_Pick1);
+                int firstPickCardKey = m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key;
+                if (isFoundMatchCell(firstPickCardKey, out matchMemoryCell) == false)
+                {
+                    m_PlayerAI.Memory.Add(new MemoryCell(io_Pick1, firstPickCardKey));
+                    generateRandomPick(out io_Pick2);
+                }
+                else
+                {
+                    io_Pick2 = matchMemoryCell.Location;
+                }
             }
-            OpenCard(io_Pick1);
-            OpenCard(io_Pick2);
         }
 
-        private void GenerateRandomPick(out MattLocation io_Pick)
+        private void generateRandomPick(out MattLocation io_Pick)
         {
             int randomIndexInPossibleMoves;
             List<MattLocation> possibleMoves = new List<MattLocation>();
             Random random = new Random();
+            bool stop;
 
             foreach (var cell in m_GameBoard.Board)
             {
-                if(cell.Visible == false && m_PlayerAI.IsCellInMemory(cell.Location) == false)
+                if(cell.Visible == false)
                 {
                     possibleMoves.Add(cell.Location);
                 }
             }
-            randomIndexInPossibleMoves = random.Next(possibleMoves.Count);
+
+            do
+            {
+                randomIndexInPossibleMoves = random.Next(possibleMoves.Count);
+                if(m_PlayerAI.IsCellInMemory(possibleMoves[randomIndexInPossibleMoves]) == true)
+                {
+                    possibleMoves.RemoveAt(randomIndexInPossibleMoves);
+                    stop = false;
+                }
+                else
+                {
+                    stop = true;
+                }
+            } while (stop == false);
 
             io_Pick = possibleMoves[randomIndexInPossibleMoves];
-            OpenCard(io_Pick);
         }
 
-        public void AddScore(ePlayer i_PlayerType)
+        private void addScore(ePlayer i_PlayerType)
         {
             switch (i_PlayerType)
             {
@@ -363,6 +471,7 @@ namespace B20_Ex02
                     break;
             }
         }
+
         public void ResetGame()
         {
             m_Player1.Reset();
