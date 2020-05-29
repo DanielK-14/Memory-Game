@@ -310,23 +310,12 @@ namespace B20_Ex02
 
         public void GetPicksForAIPlayer(out MattLocation io_Pick1, out MattLocation io_Pick2)
         {
-            bool foundNewPlace = false;
             if (m_PlayerAI.IsNoMove() == true)
             {
-                do
-                {
                     GenerateRandomPick(out io_Pick1);
-                    if (m_PlayerAI.IsCellInMemory(io_Pick1) == false)
-                    {
-                        foundNewPlace = true;
-                    }
-                }
-                while (foundNewPlace == false);
-                
-                m_PlayerAI.TryFindSecondCard(m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, out io_Pick2);
-                if (io_Pick2 == null)
+                if(m_PlayerAI.TryFindSecondCard(m_GameBoard.Board[io_Pick1.Row, io_Pick1.Col].Key, out io_Pick2) == false)
                 {
-                    GenerateRandomPick(out io_Pick2);
+                        GenerateRandomPick(out io_Pick2);
                 }
             }
             else
@@ -343,25 +332,15 @@ namespace B20_Ex02
             int randomIndexInPossibleMoves;
             List<MattLocation> possibleMoves = new List<MattLocation>();
             Random random = new Random();
-            bool stop = true;
 
             foreach (var cell in m_GameBoard.Board)
             {
-                if(cell.Visible == false)
+                if(cell.Visible == false && m_PlayerAI.IsCellInMemory(cell.Location) == false)
                 {
                     possibleMoves.Add(cell.Location);
                 }
             }
-
-            do
-            {
-                randomIndexInPossibleMoves = random.Next(possibleMoves.Count);
-                if(m_PlayerAI.IsCellInMemory(possibleMoves[randomIndexInPossibleMoves]) == true)
-                {
-                    possibleMoves.RemoveAt(randomIndexInPossibleMoves);
-                    stop = false;
-                }
-            } while (stop == false);
+            randomIndexInPossibleMoves = random.Next(possibleMoves.Count);
 
             io_Pick = possibleMoves[randomIndexInPossibleMoves];
             OpenCard(io_Pick);
@@ -384,7 +363,6 @@ namespace B20_Ex02
                     break;
             }
         }
-
         public void ResetGame()
         {
             m_Player1.Reset();

@@ -61,6 +61,7 @@ namespace B20_Ex02
                     m_Logic.GetPicksForAIPlayer(out pick1, out pick2);
                 }
                 printBoard();
+                System.Threading.Thread.Sleep(2000);
                 m_Logic.PlayTurn(pick1, pick2);
             }
         }
