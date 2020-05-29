@@ -81,7 +81,7 @@ namespace B20_Ex02
             Console.WriteLine(playerTurnInfo());
             if (m_Logic.GetPlayerTurn == GameLogics.ePlayer.PlayerAI)
             {
-                Console.WriteLine("\nPlayer AI picked : {0}{1}", Convert.ToChar(i_Pick.Col + 65), i_Pick.Row + 1);
+                Console.WriteLine("\n * Player AI picked : {0}{1} * ", Convert.ToChar(i_Pick.Col + 65), i_Pick.Row + 1);
             }
         }
 
